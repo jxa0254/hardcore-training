@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0b0d">
+<title>HardCore Training</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="top">
+    <h1>Hard<span>Core</span> Training</h1>
+    <a class="navlink" href="admin.html">Admin</a>
+</header>
+
+<main>
+
+    <section id="pickView">
+        <div class="rank-grid" id="rankGrid"></div>
+        <div class="empty-hint" id="emptyHint" hidden>
+            No workouts saved yet. Head to <a href="admin.html">Admin</a> to load some in and rank them.
+        </div>
+    </section>
+
+    <section id="boardView" hidden>
+        <div class="board-wrap" id="boardWrap">
+            <div class="board" id="board"></div>
+        </div>
+
+        <div class="board-actions">
+            <div class="btn-row">
+                <button class="btn primary block" id="btnAnother">🔀 Another One</button>
+            </div>
+            <div class="btn-row">
+                <button class="btn ghost block" id="btnChangeRank">⬅ Change Rank</button>
+            </div>
+            <label class="wake-row" for="wakeToggle">
+                <span class="switch">
+                    <input type="checkbox" id="wakeToggle">
+                    <span class="slider"></span>
+                </span>
+                Keep screen on
+            </label>
+        </div>
+    </section>
+
+</main>
+
+<footer class="foot">HardCore Training — built to screenshot, or leave running.</footer>
+
+<script src="store.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
