@@ -145,7 +145,7 @@ fileImport.addEventListener('change', () => {
             renderList();
             alert(`Imported. ${merged.length} workouts total.`);
         } catch {
-            alert('That file doesn\'t look like a HardCore Training backup.');
+            alert('That file doesn\'t look like a Hybrid Arena backup.');
         }
     };
     reader.readAsText(file);
