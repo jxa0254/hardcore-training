@@ -1,8 +1,82 @@
-// admin.js — load workouts in, edit, rank, delete. Editing happens against
-// this browser's localStorage as a working copy; the public picker
-// (index.html/app.js) reads a separate, shared workouts.json file committed
-// to the repo, so a change here isn't visible to everyone until that file
-// is updated (see "Publish" below).
+// admin.js — load workouts in, edit, rank, delete. Every change here saves
+// straight to workouts.json in the GitHub repo via the GitHub Contents API,
+// so there's no separate "publish" step — the public picker (index.html)
+// picks it up automatically once GitHub Pages rebuilds (usually under a
+// minute). Writing requires a GitHub token, entered once and kept only in
+// this browser's localStorage (see the token card below); reading the
+// current list works without one.
+
+const GH_OWNER = 'jxa0254';
+const GH_REPO = 'hardcore-training';
+const GH_PATH = 'workouts.json';
+const GH_BRANCH = 'main';
+const TOKEN_KEY = 'hybridArena.githubToken';
+
+function getToken() {
+    return localStorage.getItem(TOKEN_KEY) || '';
+}
+
+function authHeaders() {
+    const headers = { Accept: 'application/vnd.github+json' };
+    const token = getToken();
+    if (token) headers.Authorization = `Bearer ${token}`;
+    return headers;
+}
+
+function b64ToUtf8(b64) {
+    return decodeURIComponent(escape(atob(b64.replace(/\n/g, ''))));
+}
+
+function utf8ToB64(str) {
+    return btoa(unescape(encodeURIComponent(str)));
+}
+
+let currentSha = null;
+
+async function ghLoad() {
+    const res = await fetch(
+        `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_PATH}?ref=${GH_BRANCH}`,
+        { headers: authHeaders(), cache: 'no-store' }
+    );
+    if (!res.ok) throw new Error(`Couldn't load workouts from GitHub (${res.status}).`);
+    const data = await res.json();
+    currentSha = data.sha;
+    return JSON.parse(b64ToUtf8(data.content));
+}
+
+async function ghSave(list, message) {
+    if (!getToken()) {
+        const err = new Error('Connect a GitHub token above before saving.');
+        err.code = 'NO_TOKEN';
+        throw err;
+    }
+    const res = await fetch(
+        `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_PATH}`,
+        {
+            method: 'PUT',
+            headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                message,
+                content: utf8ToB64(JSON.stringify(list, null, 2)),
+                sha: currentSha,
+                branch: GH_BRANCH,
+            }),
+        }
+    );
+    if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.message || `GitHub save failed (${res.status}).`);
+    }
+    const result = await res.json();
+    currentSha = result.content.sha;
+    return result;
+}
+
+// --- App state ---
+
+let workouts = [];
+let editingId = null;
+let activeTab = 'All';
 
 const editorCard = document.getElementById('editorCard');
 const fTitle = document.getElementById('fTitle');
@@ -12,12 +86,10 @@ const btnSave = document.getElementById('btnSave');
 const btnCancel = document.getElementById('btnCancel');
 const tabsEl = document.getElementById('tabs');
 const listEl = document.getElementById('list');
-
-let editingId = null;
-let activeTab = 'All';
+const ghStatus = document.getElementById('ghStatus');
 
 function renderTabs() {
-    const counts = countsByRank();
+    const counts = countsFor(workouts);
     const total = RANKS.reduce((sum, r) => sum + counts[r], 0);
     const tabDefs = [['All', total], ...RANKS.map(r => [r, counts[r]])];
 
@@ -31,8 +103,15 @@ function renderTabs() {
     });
 }
 
+function countsFor(list) {
+    const counts = {};
+    RANKS.forEach(r => counts[r] = 0);
+    list.forEach(w => { if (counts[w.rank] !== undefined) counts[w.rank]++; });
+    return counts;
+}
+
 function renderList() {
-    const all = loadWorkouts().slice().sort((a, b) => a.title.localeCompare(b.title));
+    const all = workouts.slice().sort((a, b) => a.title.localeCompare(b.title));
     const items = activeTab === 'All' ? all : all.filter(w => w.rank === activeTab);
 
     if (items.length === 0) {
@@ -78,22 +157,50 @@ function resetForm() {
     editorCard.hidden = true;
 }
 
+function setStatus(msg, isError) {
+    ghStatus.textContent = msg;
+    ghStatus.style.color = isError ? '#ff6b6b' : 'var(--muted)';
+}
+
+async function withSaving(fn) {
+    setStatus('Saving to GitHub…', false);
+    try {
+        await fn();
+        setStatus('Saved — live on GitHub, public page updates once Pages rebuilds.', false);
+    } catch (err) {
+        if (err.code === 'NO_TOKEN') {
+            tokenCard.hidden = false;
+            setStatus(err.message, true);
+        } else {
+            setStatus(err.message || 'Save failed.', true);
+        }
+        throw err;
+    }
+}
+
 function confirmDelete(w) {
-    if (confirm(`Delete "${w.title}"? This can't be undone.`)) {
-        deleteWorkout(w.id);
+    if (!confirm(`Delete "${w.title}"? This can't be undone.`)) return;
+    const updated = workouts.filter(x => x.id !== w.id);
+    withSaving(async () => {
+        await ghSave(updated, `Delete "${w.title}"`);
+        workouts = updated;
         renderTabs();
         renderList();
-    }
+    }).catch(() => {});
 }
 
 btnSave.addEventListener('click', () => {
     if (!editingId) return;
     const title = fTitle.value.trim();
     if (!title) { fTitle.focus(); return; }
-    updateWorkout(editingId, { title, rank: fRank.value, body: fBody.value });
-    resetForm();
-    renderTabs();
-    renderList();
+    const updated = workouts.map(w => w.id === editingId ? { ...w, title, rank: fRank.value, body: fBody.value } : w);
+    withSaving(async () => {
+        await ghSave(updated, `Update "${title}"`);
+        workouts = updated;
+        resetForm();
+        renderTabs();
+        renderList();
+    }).catch(() => {});
 });
 
 btnCancel.addEventListener('click', resetForm);
@@ -104,24 +211,14 @@ function escapeHtml(s) {
     return div.innerHTML;
 }
 
-// --- Export / Import backup ---
+// --- Export / Import ---
 
 document.getElementById('btnExport').addEventListener('click', () => {
-    const blob = new Blob([JSON.stringify(loadWorkouts(), null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(workouts, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `hardcore-training-backup-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-});
-
-document.getElementById('btnPublish').addEventListener('click', () => {
-    const blob = new Blob([JSON.stringify(loadWorkouts(), null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'workouts.json';
+    a.download = `hybrid-arena-backup-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
 });
@@ -134,38 +231,56 @@ fileImport.addEventListener('change', () => {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
+        let incoming;
         try {
-            const incoming = JSON.parse(reader.result);
+            incoming = JSON.parse(reader.result);
             if (!Array.isArray(incoming)) throw new Error('not an array');
-            const existing = loadWorkouts();
-            const existingIds = new Set(existing.map(w => w.id));
-            const merged = existing.concat(incoming.filter(w => w && w.id && !existingIds.has(w.id)));
-            saveWorkouts(merged);
-            renderTabs();
-            renderList();
-            alert(`Imported. ${merged.length} workouts total.`);
         } catch {
             alert('That file doesn\'t look like a Hybrid Arena backup.');
+            return;
         }
+        const existingIds = new Set(workouts.map(w => w.id));
+        const merged = workouts.concat(incoming.filter(w => w && w.id && !existingIds.has(w.id)));
+        withSaving(async () => {
+            await ghSave(merged, `Import ${incoming.length} workout(s)`);
+            workouts = merged;
+            renderTabs();
+            renderList();
+        }).catch(() => {});
     };
     reader.readAsText(file);
     fileImport.value = '';
 });
 
-async function seedFromPublishedIfEmpty() {
-    if (loadWorkouts().length > 0) return;
-    try {
-        const res = await fetch('workouts.json', { cache: 'no-store' });
-        if (!res.ok) return;
-        const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) saveWorkouts(data);
-    } catch {
-        // no published file yet (or offline) — start from an empty list
-    }
-}
+// --- Refresh ---
+
+document.getElementById('btnRefresh').addEventListener('click', () => {
+    location.href = location.pathname + '?t=' + Date.now();
+});
+
+// --- GitHub token ---
+
+const tokenCard = document.getElementById('tokenCard');
+const tokenInput = document.getElementById('tokenInput');
+
+document.getElementById('btnSaveToken').addEventListener('click', () => {
+    const t = tokenInput.value.trim();
+    if (!t) return;
+    localStorage.setItem(TOKEN_KEY, t);
+    tokenInput.value = '';
+    tokenCard.hidden = true;
+    setStatus('GitHub token saved. Try your save again.', false);
+});
 
 async function initAdmin() {
-    await seedFromPublishedIfEmpty();
+    tokenCard.hidden = !!getToken();
+    try {
+        workouts = await ghLoad();
+        setStatus('Connected — this is the live list.', false);
+    } catch (err) {
+        setStatus(err.message, true);
+        workouts = [];
+    }
     resetForm();
     renderTabs();
     renderList();
@@ -178,10 +293,6 @@ async function initAdmin() {
 
 const ADMIN_PASSCODE = '1234';
 const UNLOCK_KEY = 'hybridArena.adminUnlocked';
-
-document.getElementById('btnRefresh').addEventListener('click', () => {
-    location.href = location.pathname + '?t=' + Date.now();
-});
 
 const lockScreen = document.getElementById('lockScreen');
 const adminContent = document.getElementById('adminContent');

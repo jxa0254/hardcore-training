@@ -32,6 +32,19 @@
 
     <div id="adminContent" hidden>
 
+    <div class="card" id="tokenCard" hidden>
+        <div class="field">
+            <label for="tokenInput">GitHub Token (saves changes live)</label>
+            <input type="password" id="tokenInput" placeholder="github_pat_..." autocomplete="off">
+            <div class="hint">Create a <strong>fine-grained</strong> token at github.com &rarr; Settings &rarr; Developer settings &rarr; Personal access tokens: repository access limited to just <code>hardcore-training</code>, permission <strong>Contents: Read and write</strong>. It's saved only in this browser and used only to call GitHub's API directly from here — never sent anywhere else.</div>
+        </div>
+        <div class="btn-row">
+            <button class="btn primary" id="btnSaveToken">Save Token</button>
+        </div>
+    </div>
+
+    <div class="hint" id="ghStatus" style="margin-bottom:14px;"></div>
+
     <div class="card" id="editorCard" hidden>
         <div class="field">
             <label for="fTitle">Workout Name</label>
@@ -64,15 +77,11 @@
 
     <div class="card">
         <div class="btn-row">
-            <button class="btn primary small" id="btnPublish">🌐 Publish (downloads workouts.json)</button>
-        </div>
-        <div class="hint" style="margin-top:10px;">Editing here only changes <strong>this device's</strong> working copy. To make it live for the public link (including your phone), click Publish to download <code>workouts.json</code>, then drop it into the <code>hardcore-training</code> repo folder and push — or just send James/Claude the file to push for you.</div>
-        <div class="btn-row" style="margin-top:14px;">
             <button class="btn small" id="btnExport">⬇ Export Backup</button>
             <button class="btn small" id="btnImport">⬆ Import Backup</button>
             <input type="file" id="fileImport" accept="application/json" hidden>
         </div>
-        <div class="hint" style="margin-top:10px;">New workouts get added by Import (uploading a backup/seed file) rather than typed in here — click a workout below to edit its name, rank, or details. Export/Import move your working copy between devices; Publish above is what actually updates the shared list everyone sees.</div>
+        <div class="hint" style="margin-top:10px;">Saves here go straight to GitHub — no separate publish step. The public link picks it up automatically once GitHub Pages rebuilds (usually well under a minute; use 🔄 Refresh if it hasn't shown up yet). New workouts get added via Import; click a workout below to edit its name, rank, or details, or delete it. Export is just a manual backup file.</div>
     </div>
 
     </div>
