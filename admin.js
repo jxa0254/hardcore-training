@@ -179,6 +179,10 @@ async function initAdmin() {
 const ADMIN_PASSCODE = '1234';
 const UNLOCK_KEY = 'hybridArena.adminUnlocked';
 
+document.getElementById('btnRefresh').addEventListener('click', () => {
+    location.href = location.pathname + '?t=' + Date.now();
+});
+
 const lockScreen = document.getElementById('lockScreen');
 const adminContent = document.getElementById('adminContent');
 const pinInput = document.getElementById('pinInput');

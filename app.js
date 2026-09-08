@@ -115,6 +115,10 @@ function escapeHtml(s) {
 document.getElementById('btnBackToRanks').addEventListener('click', renderPicker);
 document.getElementById('btnHome').addEventListener('click', renderPicker);
 
+document.getElementById('btnRefresh').addEventListener('click', () => {
+    location.href = location.pathname + '?t=' + Date.now();
+});
+
 // --- Screen Wake Lock (so the board can be left running mid-workout) ---
 
 const wakeLockSupported = 'wakeLock' in navigator;
