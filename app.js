@@ -102,7 +102,7 @@ function formatBody(body) {
         if (line.endsWith(':')) {
             return `<div class="section">${escapeHtml(line.slice(0, -1))}</div>`;
         }
-        return `<div class="line">💪 ${escapeHtml(line)}</div>`;
+        return `<div class="line">- ${escapeHtml(line)}</div>`;
     }).join('');
 }
 

@@ -229,71 +229,61 @@ footer.foot {
     flex: none;
 }
 
-/* --- The board (workout display, screenshot-friendly) --- */
+/* --- The board (workout display, styled like a photographed whiteboard) --- */
 
 .board-wrap {
-    padding: 3px;
-    border-radius: 20px;
-    background: var(--line);
+    padding: 18px;
+    border-radius: 24px;
+    background:
+        radial-gradient(ellipse at center, rgba(255,150,60,.6) 0%, rgba(120,55,15,.85) 55%, #08070a 100%);
 }
 
-.board-wrap.stripe-Tough { background: linear-gradient(135deg, #ffd23f, var(--tough)); }
-.board-wrap.stripe-Tougher { background: linear-gradient(135deg, #ff8a3d, var(--tougher)); }
-.board-wrap.stripe-Extreme { background: linear-gradient(135deg, #ff4d6d, var(--extreme)); }
-
 .board {
-    background: radial-gradient(circle at 30% 0%, #24242b, #101013 70%);
-    border-radius: 16px;
-    padding: 28px 22px 24px;
-    text-align: center;
+    background:
+        radial-gradient(ellipse at 25% 15%, rgba(255,255,255,.55), transparent 55%),
+        linear-gradient(160deg, #f6ecd9, #ecdec0 55%, #ddc99b);
+    border-radius: 14px;
+    padding: 30px 26px 26px;
+    text-align: left;
+    color: #332a18;
+    font-family: 'Kalam', cursive;
+    box-shadow: inset 0 0 34px rgba(90,50,10,.18);
 }
 
 .board .rank-pill { font-size: 13px; padding: 6px 16px; }
 
 .board h2 {
-    margin: 16px 0 4px;
-    font-size: 28px;
-    font-weight: 900;
+    margin: 18px 0 4px;
+    font-size: 30px;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: .5px;
-    line-height: 1.15;
-}
-
-.board .meta {
-    color: var(--muted);
-    font-size: 12px;
-    margin-bottom: 18px;
-}
-
-.board .body {
-    text-align: left;
-    background: rgba(255,255,255,.03);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 16px 18px;
+    line-height: 1.2;
+    color: #2b2314;
 }
 
 .board .body .section {
-    font-weight: 900;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: .5px;
-    color: var(--accent);
-    margin: 14px 0 6px;
-    font-size: 13px;
+    color: #2f7a44;
+    border-bottom: 3px solid #2f7a44;
+    display: inline-block;
+    margin: 18px 0 8px;
+    font-size: 19px;
+    padding-bottom: 1px;
 }
 
-.board .body .section:first-child { margin-top: 0; }
+.board .body .section:first-child { margin-top: 4px; }
 
 .board .body .line {
     display: flex;
-    gap: 10px;
-    padding: 6px 0;
-    border-bottom: 1px dashed var(--line);
-    font-size: 15px;
-    line-height: 1.4;
+    gap: 8px;
+    padding: 3px 0;
+    font-size: 17px;
+    line-height: 1.45;
+    color: #2b2314;
 }
-
-.board .body .line:last-child { border-bottom: none; }
 
 .board-actions {
     margin-top: 18px;
