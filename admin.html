@@ -16,7 +16,7 @@
 
 <main>
 
-    <div class="card">
+    <div class="card" id="editorCard" hidden>
         <div class="field">
             <label for="fTitle">Workout Name</label>
             <input type="text" id="fTitle" placeholder="e.g. Leg Day Inferno">
@@ -35,8 +35,8 @@
             <div class="hint">One exercise per line. A line ending in <strong>:</strong> becomes a section heading (e.g. "Warm-up:").</div>
         </div>
         <div class="btn-row">
-            <button class="btn primary" id="btnSave">Save Workout</button>
-            <button class="btn ghost" id="btnCancel" hidden>Cancel Edit</button>
+            <button class="btn primary" id="btnSave">Save Changes</button>
+            <button class="btn ghost" id="btnCancel">Cancel</button>
         </div>
     </div>
 
@@ -56,7 +56,7 @@
             <button class="btn small" id="btnImport">⬆ Import Backup</button>
             <input type="file" id="fileImport" accept="application/json" hidden>
         </div>
-        <div class="hint" style="margin-top:10px;">Export/Import are just for moving your working copy between devices manually — Publish above is what actually updates the shared list everyone sees.</div>
+        <div class="hint" style="margin-top:10px;">New workouts get added by Import (uploading a backup/seed file) rather than typed in here — click a workout below to edit its name, rank, or details. Export/Import move your working copy between devices; Publish above is what actually updates the shared list everyone sees.</div>
     </div>
 
 </main>

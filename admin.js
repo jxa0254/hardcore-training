@@ -4,6 +4,7 @@
 // to the repo, so a change here isn't visible to everyone until that file
 // is updated (see "Publish" below).
 
+const editorCard = document.getElementById('editorCard');
 const fTitle = document.getElementById('fTitle');
 const fRank = document.getElementById('fRank');
 const fBody = document.getElementById('fBody');
@@ -65,9 +66,8 @@ function startEdit(w) {
     fTitle.value = w.title;
     fRank.value = w.rank;
     fBody.value = w.body || '';
-    btnSave.textContent = 'Save Changes';
-    btnCancel.hidden = false;
-    fTitle.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    editorCard.hidden = false;
+    editorCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function resetForm() {
@@ -75,8 +75,7 @@ function resetForm() {
     fTitle.value = '';
     fRank.value = 'Tough';
     fBody.value = '';
-    btnSave.textContent = 'Save Workout';
-    btnCancel.hidden = true;
+    editorCard.hidden = true;
 }
 
 function confirmDelete(w) {
@@ -88,15 +87,10 @@ function confirmDelete(w) {
 }
 
 btnSave.addEventListener('click', () => {
+    if (!editingId) return;
     const title = fTitle.value.trim();
     if (!title) { fTitle.focus(); return; }
-    const data = { title, rank: fRank.value, body: fBody.value };
-
-    if (editingId) {
-        updateWorkout(editingId, data);
-    } else {
-        addWorkout(data);
-    }
+    updateWorkout(editingId, { title, rank: fRank.value, body: fBody.value });
     resetForm();
     renderTabs();
     renderList();
