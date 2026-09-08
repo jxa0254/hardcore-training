@@ -188,6 +188,42 @@ footer.foot {
 
 .empty-hint a { color: var(--accent); font-weight: 700; }
 
+/* --- Workout picker (choose a specific workout within a rank) --- */
+
+.workout-picker {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.workout-pick {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    text-align: left;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px 18px;
+    color: var(--text);
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.workout-pick:active { background: var(--panel-2); }
+
+.workout-pick .name {
+    font-weight: 800;
+    font-size: 16px;
+}
+
+.workout-pick .arrow {
+    color: var(--muted);
+    flex: none;
+}
+
 /* --- The board (workout display, screenshot-friendly) --- */
 
 .board-wrap {

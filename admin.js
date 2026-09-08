@@ -164,9 +164,50 @@ async function seedFromPublishedIfEmpty() {
     }
 }
 
-(async function init() {
+async function initAdmin() {
     await seedFromPublishedIfEmpty();
     resetForm();
     renderTabs();
     renderList();
-})();
+}
+
+// --- Passcode gate ---
+// Client-side only — a deterrent against casual editing, not real security
+// (the code is visible in the page source). Fine for a personal tool; don't
+// rely on it to protect anything sensitive.
+
+const ADMIN_PASSCODE = '1234';
+const UNLOCK_KEY = 'hybridArena.adminUnlocked';
+
+const lockScreen = document.getElementById('lockScreen');
+const adminContent = document.getElementById('adminContent');
+const pinInput = document.getElementById('pinInput');
+const pinError = document.getElementById('pinError');
+
+function unlock() {
+    sessionStorage.setItem(UNLOCK_KEY, '1');
+    lockScreen.hidden = true;
+    adminContent.hidden = false;
+    initAdmin();
+}
+
+document.getElementById('btnUnlock').addEventListener('click', () => {
+    if (pinInput.value === ADMIN_PASSCODE) {
+        pinError.style.display = 'none';
+        unlock();
+    } else {
+        pinError.style.display = 'block';
+        pinInput.value = '';
+        pinInput.focus();
+    }
+});
+
+pinInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('btnUnlock').click();
+});
+
+if (sessionStorage.getItem(UNLOCK_KEY) === '1') {
+    unlock();
+} else {
+    pinInput.focus();
+}

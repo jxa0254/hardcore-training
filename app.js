@@ -5,19 +5,22 @@
 // localStorage, which is private to one browser/device). If that fetch
 // fails — e.g. testing index.html straight off disk with no server — it
 // falls back to whatever's in this browser's localStorage.
+//
+// Flow: Home (pick a rank) -> pick a specific workout from that rank's list
+// -> board. Nothing is randomised — you always choose exactly which workout
+// you see.
 
 const rankGrid = document.getElementById('rankGrid');
 const emptyHint = document.getElementById('emptyHint');
 const pickView = document.getElementById('pickView');
+const listView = document.getElementById('listView');
+const workoutPicker = document.getElementById('workoutPicker');
 const boardView = document.getElementById('boardView');
 const boardWrap = document.getElementById('boardWrap');
 const board = document.getElementById('board');
 const wakeToggle = document.getElementById('wakeToggle');
 
 let workouts = [];
-let currentRank = null;
-let currentWorkout = null;
-let wakeLock = null;
 
 async function loadPublishedWorkouts() {
     try {
@@ -38,15 +41,10 @@ function countsFor(list) {
     return counts;
 }
 
-function randomFrom(list, rank, excludeId) {
-    const pool = list.filter(w => w.rank === rank);
-    if (pool.length === 0) return null;
-    if (pool.length === 1) return pool[0];
-    let pick;
-    do {
-        pick = pool[Math.floor(Math.random() * pool.length)];
-    } while (pick.id === excludeId);
-    return pick;
+function showView(view) {
+    pickView.hidden = view !== 'pick';
+    listView.hidden = view !== 'list';
+    boardView.hidden = view !== 'board';
 }
 
 function renderPicker() {
@@ -64,30 +62,37 @@ function renderPicker() {
         btn.addEventListener('click', () => pickRank(rank));
         rankGrid.appendChild(btn);
     });
+
+    showView('pick');
 }
 
 function pickRank(rank) {
-    const w = randomFrom(workouts, rank);
-    if (!w) return;
-    currentRank = rank;
-    showWorkout(w);
-    pickView.hidden = true;
-    boardView.hidden = false;
+    const items = workouts.filter(w => w.rank === rank).sort((a, b) => a.title.localeCompare(b.title));
+    if (items.length === 0) return;
+
+    workoutPicker.innerHTML = '';
+    items.forEach(w => {
+        const btn = document.createElement('button');
+        btn.className = 'workout-pick';
+        btn.innerHTML = `<span class="name">${escapeHtml(w.title)}</span><span class="rank-pill rank-${w.rank}">${w.rank}</span>`;
+        btn.addEventListener('click', () => showWorkout(w));
+        workoutPicker.appendChild(btn);
+    });
+
+    showView('list');
 }
 
 function showWorkout(w) {
-    currentWorkout = w;
     boardWrap.className = `board-wrap stripe-${w.rank}`;
-
-    const counts = countsFor(workouts);
     const bodyHtml = formatBody(w.body);
 
     board.innerHTML = `
         <span class="rank-pill rank-${w.rank}">${w.rank}</span>
         <h2>${escapeHtml(w.title)}</h2>
-        <div class="meta">1 of ${counts[w.rank]} ${w.rank} workout${counts[w.rank] === 1 ? '' : 's'}</div>
         <div class="body">${bodyHtml}</div>
     `;
+
+    showView('board');
 }
 
 function formatBody(body) {
@@ -107,16 +112,8 @@ function escapeHtml(s) {
     return div.innerHTML;
 }
 
-document.getElementById('btnAnother').addEventListener('click', () => {
-    const w = randomFrom(workouts, currentRank, currentWorkout ? currentWorkout.id : null);
-    if (w) showWorkout(w);
-});
-
-document.getElementById('btnChangeRank').addEventListener('click', () => {
-    boardView.hidden = true;
-    pickView.hidden = false;
-    renderPicker();
-});
+document.getElementById('btnBackToRanks').addEventListener('click', renderPicker);
+document.getElementById('btnHome').addEventListener('click', renderPicker);
 
 // --- Screen Wake Lock (so the board can be left running mid-workout) ---
 
@@ -124,6 +121,8 @@ const wakeLockSupported = 'wakeLock' in navigator;
 if (!wakeLockSupported) {
     wakeToggle.disabled = true;
 }
+
+let wakeLock = null;
 
 async function requestWakeLock() {
     try {
