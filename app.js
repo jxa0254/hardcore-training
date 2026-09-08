@@ -1,4 +1,10 @@
 // app.js — the picker + board (index.html) only. Admin logic lives in admin.js.
+//
+// The picker reads from workouts.json, a plain file committed to this repo,
+// so every visitor to the published URL sees the same list (unlike
+// localStorage, which is private to one browser/device). If that fetch
+// fails — e.g. testing index.html straight off disk with no server — it
+// falls back to whatever's in this browser's localStorage.
 
 const rankGrid = document.getElementById('rankGrid');
 const emptyHint = document.getElementById('emptyHint');
@@ -8,12 +14,43 @@ const boardWrap = document.getElementById('boardWrap');
 const board = document.getElementById('board');
 const wakeToggle = document.getElementById('wakeToggle');
 
+let workouts = [];
 let currentRank = null;
 let currentWorkout = null;
 let wakeLock = null;
 
+async function loadPublishedWorkouts() {
+    try {
+        const res = await fetch('workouts.json', { cache: 'no-store' });
+        if (!res.ok) throw new Error('no workouts.json');
+        const data = await res.json();
+        if (Array.isArray(data)) return data;
+    } catch {
+        // fall through to local fallback
+    }
+    return loadWorkouts();
+}
+
+function countsFor(list) {
+    const counts = {};
+    RANKS.forEach(r => counts[r] = 0);
+    list.forEach(w => { if (counts[w.rank] !== undefined) counts[w.rank]++; });
+    return counts;
+}
+
+function randomFrom(list, rank, excludeId) {
+    const pool = list.filter(w => w.rank === rank);
+    if (pool.length === 0) return null;
+    if (pool.length === 1) return pool[0];
+    let pick;
+    do {
+        pick = pool[Math.floor(Math.random() * pool.length)];
+    } while (pick.id === excludeId);
+    return pick;
+}
+
 function renderPicker() {
-    const counts = countsByRank();
+    const counts = countsFor(workouts);
     const total = RANKS.reduce((sum, r) => sum + counts[r], 0);
     emptyHint.hidden = total > 0;
 
@@ -30,7 +67,7 @@ function renderPicker() {
 }
 
 function pickRank(rank) {
-    const w = randomWorkout(rank);
+    const w = randomFrom(workouts, rank);
     if (!w) return;
     currentRank = rank;
     showWorkout(w);
@@ -42,7 +79,7 @@ function showWorkout(w) {
     currentWorkout = w;
     boardWrap.className = `board-wrap stripe-${w.rank}`;
 
-    const counts = countsByRank();
+    const counts = countsFor(workouts);
     const bodyHtml = formatBody(w.body);
 
     board.innerHTML = `
@@ -71,7 +108,7 @@ function escapeHtml(s) {
 }
 
 document.getElementById('btnAnother').addEventListener('click', () => {
-    const w = randomWorkout(currentRank, currentWorkout ? currentWorkout.id : null);
+    const w = randomFrom(workouts, currentRank, currentWorkout ? currentWorkout.id : null);
     if (w) showWorkout(w);
 });
 
@@ -112,4 +149,7 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 
-renderPicker();
+(async function init() {
+    workouts = await loadPublishedWorkouts();
+    renderPicker();
+})();

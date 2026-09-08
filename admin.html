@@ -48,11 +48,15 @@
 
     <div class="card">
         <div class="btn-row">
+            <button class="btn primary small" id="btnPublish">🌐 Publish (downloads workouts.json)</button>
+        </div>
+        <div class="hint" style="margin-top:10px;">Editing here only changes <strong>this device's</strong> working copy. To make it live for the public link (including your phone), click Publish to download <code>workouts.json</code>, then drop it into the <code>hardcore-training</code> repo folder and push — or just send James/Claude the file to push for you.</div>
+        <div class="btn-row" style="margin-top:14px;">
             <button class="btn small" id="btnExport">⬇ Export Backup</button>
             <button class="btn small" id="btnImport">⬆ Import Backup</button>
             <input type="file" id="fileImport" accept="application/json" hidden>
         </div>
-        <div class="hint" style="margin-top:10px;">Everything is stored on this device only (browser storage). Export a backup here and import it on another device to bring your workouts across.</div>
+        <div class="hint" style="margin-top:10px;">Export/Import are just for moving your working copy between devices manually — Publish above is what actually updates the shared list everyone sees.</div>
     </div>
 
 </main>

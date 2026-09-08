@@ -1,0 +1,44 @@
+[
+  {
+    "id": "seed-pairs-grinder-50",
+    "createdAt": "2026-09-08T12:00:00.000Z",
+    "title": "Pairs Grinder — 50 Min Cap",
+    "rank": "Tougher",
+    "body": "Round 1 (3 Rounds):\n500m Row/Ski or 1000m Bike\n40 Wall Balls\n30 Burpees\n40 KB Swings (16/24kg)\n30 Box Jump Overs\n\nRound 2 (3 Rounds):\n20 DB Thrusters (Alternating)\n40 Reverse Lunges (DB)\n20 Devil Press (Alternating)\n400m Run (Synchro)\n\nBuy-Out:\n80/100 Cal Echo, Ski or Row\n100 Sit-Ups"
+  },
+  {
+    "id": "seed-i-go-you-go",
+    "createdAt": "2026-09-08T12:00:00.000Z",
+    "title": "I Go You Go — Pairs Ladder",
+    "rank": "Tough",
+    "body": "Block 1 (8 Rounds):\n12/10 Cal Ski\n10 Burpee Box Jump Overs\n\nBlock 2 (8 Rounds):\n8 DB Thrusters (Alternating)\n20m Sled Push\n\nBlock 3 (8 Rounds):\n12/10 Cal Row\n10 Wall Balls"
+  },
+  {
+    "id": "seed-synchro-lap-ladder",
+    "createdAt": "2026-09-08T12:00:00.000Z",
+    "title": "Synchro Lap Ladder — E5M",
+    "rank": "Tough",
+    "body": "Lap 1 (Every 5 Min):\n30 DB Snatch\n10 Synchro Burpees\n\nLap 2 (Every 5 Min):\n20 Box Jump Overs\n20 Synchro Sit-Ups\n\nLap 3 (Every 5 Min):\n30 Wall Balls\n20 Synchro Squats\n\nLap 4 (Every 5 Min):\n20/24 Cal Echo"
+  },
+  {
+    "id": "seed-big-chipper",
+    "createdAt": "2026-09-08T12:00:00.000Z",
+    "title": "The Big Chipper — Buy In/Out",
+    "rank": "Extreme",
+    "body": "Buy-In:\n600m Synchro Run\n\nMain (For Time):\n100 Cal Bike/Echo (80)\n80 Wall Balls\n60 Box Jump Overs\n50 American KB Swings\n40 Burpees Over KB\n40 DB Hand Clean + Press (Alternating)\n50 DB Thrusters (Alternating)\n60 Synchro Sit-Ups\n80 DB Overhead Reverse Lunges\n100 Cal Ski or Row\n\nBuy-Out:\n600m Synchro Run"
+  },
+  {
+    "id": "seed-4x4-engine-builder",
+    "createdAt": "2026-09-08T12:00:00.000Z",
+    "title": "4x4 Engine Builder",
+    "rank": "Tougher",
+    "body": "Block 1 (4 Rounds):\n1 Lap\n30 Cal Erg (Switch Each Round)\n12 DB Devil Press (Alternating)\n\nBlock 2 (4 Rounds):\n1 Lap\n40 Wall Balls\n15 Synchro Burpees\n\nBlock 3 (4 Rounds):\n1 Lap\n30 Cal Erg (Switch Each Round)\n15 DB Snatch (Alternating)\n\nBlock 4 (4 Rounds):\n1 Lap\n20 Synchro Sit-Ups\n10 Box Jump Overs"
+  },
+  {
+    "id": "seed-ygig-mega-chipper",
+    "createdAt": "2026-09-08T12:00:00.000Z",
+    "title": "YGIG Mega Chipper",
+    "rank": "Extreme",
+    "body": "Block 1 (You Go I Go):\n100 Burpee Bar Touches\n50 Wall Balls\n50 Box Jump Overs\n50 DB Alternating Snatch\n50 Cal Erg\n1 Lap (Together)\n\nBlock 2 (You Go I Go):\n50 Wall Balls\n50 DB Box Step-Overs\n50 Clean and Press\n50 Cal Erg\n1 Lap (Together)\n\nBlock 3 (You Go I Go):\n50 Wall Balls\n50 Burpee Box Overs\n50 DB Reverse Lunges\n50 Cal Erg\n4 Laps (Together)"
+  }
+]

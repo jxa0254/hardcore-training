@@ -1,5 +1,8 @@
-// admin.js — load workouts in, edit, rank, delete. index.html/app.js is the
-// separate front end that reads the same localStorage data back out.
+// admin.js — load workouts in, edit, rank, delete. Editing happens against
+// this browser's localStorage as a working copy; the public picker
+// (index.html/app.js) reads a separate, shared workouts.json file committed
+// to the repo, so a change here isn't visible to everyone until that file
+// is updated (see "Publish" below).
 
 const fTitle = document.getElementById('fTitle');
 const fRank = document.getElementById('fRank');
@@ -119,6 +122,16 @@ document.getElementById('btnExport').addEventListener('click', () => {
     URL.revokeObjectURL(url);
 });
 
+document.getElementById('btnPublish').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(loadWorkouts(), null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'workouts.json';
+    a.click();
+    URL.revokeObjectURL(url);
+});
+
 const fileImport = document.getElementById('fileImport');
 document.getElementById('btnImport').addEventListener('click', () => fileImport.click());
 
@@ -145,6 +158,21 @@ fileImport.addEventListener('change', () => {
     fileImport.value = '';
 });
 
-resetForm();
-renderTabs();
-renderList();
+async function seedFromPublishedIfEmpty() {
+    if (loadWorkouts().length > 0) return;
+    try {
+        const res = await fetch('workouts.json', { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) saveWorkouts(data);
+    } catch {
+        // no published file yet (or offline) — start from an empty list
+    }
+}
+
+(async function init() {
+    await seedFromPublishedIfEmpty();
+    resetForm();
+    renderTabs();
+    renderList();
+})();
