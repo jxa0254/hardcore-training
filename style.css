@@ -232,20 +232,14 @@ footer.foot {
 /* --- The board (workout display, screenshot-friendly) --- */
 
 .board-wrap {
-    padding: 14px;
-    border-radius: 22px;
-    background-size: 40px 40px;
+    padding: 3px;
+    border-radius: 20px;
+    background: var(--line);
 }
 
-.board-wrap.stripe-Tough {
-    background-image: repeating-linear-gradient(45deg, #000 0 10px, var(--tough) 10px 20px);
-}
-.board-wrap.stripe-Tougher {
-    background-image: repeating-linear-gradient(45deg, #000 0 10px, var(--tougher) 10px 20px);
-}
-.board-wrap.stripe-Extreme {
-    background-image: repeating-linear-gradient(45deg, #000 0 10px, var(--extreme) 10px 20px);
-}
+.board-wrap.stripe-Tough { background: linear-gradient(135deg, #ffd23f, var(--tough)); }
+.board-wrap.stripe-Tougher { background: linear-gradient(135deg, #ff8a3d, var(--tougher)); }
+.board-wrap.stripe-Extreme { background: linear-gradient(135deg, #ff4d6d, var(--extreme)); }
 
 .board {
     background: radial-gradient(circle at 30% 0%, #24242b, #101013 70%);
