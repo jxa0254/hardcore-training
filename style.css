@@ -239,11 +239,13 @@ footer.foot {
 }
 
 .board {
+    display: flex;
+    flex-direction: column;
     background:
         radial-gradient(ellipse at 25% 15%, rgba(255,255,255,.55), transparent 55%),
         linear-gradient(160deg, #f6ecd9, #ecdec0 55%, #ddc99b);
     border-radius: 14px;
-    padding: 30px 26px 26px;
+    padding: 30px 26px 22px;
     text-align: left;
     color: #332a18;
     font-family: 'Kalam', cursive;
@@ -286,11 +288,15 @@ footer.foot {
 }
 
 .board .credit {
-    margin-top: 20px;
+    margin-top: auto;
+    padding-top: 30px;
     text-align: center;
-    font-size: 14px;
-    font-style: italic;
-    color: #7a6a48;
+    font-family: -apple-system, "Segoe UI", system-ui, Roboto, Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--accent);
 }
 
 .board-actions {
