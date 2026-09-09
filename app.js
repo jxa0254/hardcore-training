@@ -90,6 +90,7 @@ function showWorkout(w) {
         <span class="rank-pill rank-${w.rank}">${w.rank}</span>
         <h2>${escapeHtml(w.title)}</h2>
         <div class="body">${bodyHtml}</div>
+        <div class="credit">This sesh was put together by DynamicFitness</div>
     `;
 
     showView('board');

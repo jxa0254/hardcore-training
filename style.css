@@ -285,6 +285,14 @@ footer.foot {
     color: #2b2314;
 }
 
+.board .credit {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 14px;
+    font-style: italic;
+    color: #7a6a48;
+}
+
 .board-actions {
     margin-top: 18px;
     display: flex;
