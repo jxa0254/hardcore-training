@@ -83,14 +83,13 @@ function pickRank(rank) {
 }
 
 function showWorkout(w) {
-    boardWrap.className = `board-wrap stripe-${w.rank}`;
     const bodyHtml = formatBody(w.body);
 
     board.innerHTML = `
         <span class="rank-pill rank-${w.rank}">${w.rank}</span>
         <h2>${escapeHtml(w.title)}</h2>
         <div class="body">${bodyHtml}</div>
-        <div class="credit">This sesh was put together by DynamicFitness</div>
+        <div class="credit">This sesh was put together by ${escapeHtml(w.credit || 'DynamicFitness')}</div>
     `;
 
     showView('board');
@@ -103,8 +102,34 @@ function formatBody(body) {
         if (line.endsWith(':')) {
             return `<div class="section">${escapeHtml(line.slice(0, -1))}</div>`;
         }
-        return `<div class="line">- ${escapeHtml(line)}</div>`;
+        return `<div class="line">${formatLine(line)}</div>`;
     }).join('');
+}
+
+/** Colour-code a line like the gym's own whiteboards: a leading number/
+ *  distance in blue, the exercise name in black, a trailing "(note)" in red. */
+function formatLine(line) {
+    let rest = line;
+    let note = '';
+    const noteMatch = rest.match(/\s*(\([^)]*\))\s*$/);
+    if (noteMatch) {
+        note = noteMatch[1];
+        rest = rest.slice(0, noteMatch.index).trim();
+    }
+
+    let num = '';
+    let txt = rest;
+    const numMatch = rest.match(/^([\d/.]+[a-zA-Z]*)\s+(.*)$/);
+    if (numMatch) {
+        num = numMatch[1];
+        txt = numMatch[2];
+    }
+
+    let html = '';
+    if (num) html += `<span class="num">${escapeHtml(num)}</span>`;
+    if (txt) html += `<span class="txt">${escapeHtml(txt)}</span>`;
+    if (note) html += `<span class="note">${escapeHtml(note)}</span>`;
+    return html || escapeHtml(line);
 }
 
 function escapeHtml(s) {

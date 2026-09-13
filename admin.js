@@ -82,6 +82,7 @@ const editorCard = document.getElementById('editorCard');
 const fTitle = document.getElementById('fTitle');
 const fRank = document.getElementById('fRank');
 const fBody = document.getElementById('fBody');
+const fCredit = document.getElementById('fCredit');
 const btnSave = document.getElementById('btnSave');
 const btnCancel = document.getElementById('btnCancel');
 const tabsEl = document.getElementById('tabs');
@@ -145,6 +146,7 @@ function startEdit(w) {
     fTitle.value = w.title;
     fRank.value = w.rank;
     fBody.value = w.body || '';
+    fCredit.value = w.credit || '';
     editorCard.hidden = false;
     editorCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -154,6 +156,7 @@ function resetForm() {
     fTitle.value = '';
     fRank.value = 'Tough';
     fBody.value = '';
+    fCredit.value = '';
     editorCard.hidden = true;
 }
 
@@ -193,7 +196,7 @@ btnSave.addEventListener('click', () => {
     if (!editingId) return;
     const title = fTitle.value.trim();
     if (!title) { fTitle.focus(); return; }
-    const updated = workouts.map(w => w.id === editingId ? { ...w, title, rank: fRank.value, body: fBody.value } : w);
+    const updated = workouts.map(w => w.id === editingId ? { ...w, title, rank: fRank.value, body: fBody.value, credit: fCredit.value.trim() } : w);
     withSaving(async () => {
         await ghSave(updated, `Update "${title}"`);
         workouts = updated;
