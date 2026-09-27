@@ -69,6 +69,7 @@
     "createdAt": "2026-09-27T15:00:00.000Z",
     "title": "500/30",
     "credit": "Mike @ A*",
-    "body": "10 Rounds:\nRun 2.5 Laps (TF)\nWalk Down Sled Track Back to Start Line (30 Secs)"
+    "body": "10 Rounds:\nRun 2.5 Laps (TF)\nWalk Down Sled Track Back to Start Line (30 Secs)",
+    "hidden": true
   }
 ]
