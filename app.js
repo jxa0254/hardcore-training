@@ -116,7 +116,6 @@ function showWorkout(w) {
         ${pillHtml(level)}
         <h2>${escapeHtml(w.title)}</h2>
         <div class="body">${bodyHtml}</div>
-        <div class="rate-row" id="rateRow"></div>
         <div class="credit">This sesh was powered by ${escapeHtml(w.credit || defaultCredit)}</div>
     `;
 
