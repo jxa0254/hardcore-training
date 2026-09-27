@@ -98,13 +98,14 @@ async function ghSaveSettings(settings, message) {
 // --- App state ---
 
 let workouts = [];
+let ratings = {};
 let settings = { defaultCredit: 'Dynamic Fitness' };
 let editingId = null;
 let activeTab = 'All';
 
 const editorCard = document.getElementById('editorCard');
 const fTitle = document.getElementById('fTitle');
-const fRank = document.getElementById('fRank');
+const fLevelInfo = document.getElementById('fLevelInfo');
 const fBody = document.getElementById('fBody');
 const fCredit = document.getElementById('fCredit');
 const btnSave = document.getElementById('btnSave');
@@ -113,10 +114,18 @@ const tabsEl = document.getElementById('tabs');
 const listEl = document.getElementById('list');
 const ghStatus = document.getElementById('ghStatus');
 
+const LEVEL_TABS = ['Unrated', ...RANKS];
+
+function levelOf(w) {
+    return levelFor(ratings[w.id]) || 'Unrated';
+}
+
 function renderTabs() {
-    const counts = countsFor(workouts);
-    const total = RANKS.reduce((sum, r) => sum + counts[r], 0);
-    const tabDefs = [['All', total], ...RANKS.map(r => [r, counts[r]])];
+    const counts = { Unrated: 0 };
+    RANKS.forEach(r => counts[r] = 0);
+    workouts.forEach(w => counts[levelOf(w)]++);
+    const total = workouts.length;
+    const tabDefs = [['All', total], ...LEVEL_TABS.map(r => [r, counts[r]])];
 
     tabsEl.innerHTML = '';
     tabDefs.forEach(([name, count]) => {
@@ -128,16 +137,9 @@ function renderTabs() {
     });
 }
 
-function countsFor(list) {
-    const counts = {};
-    RANKS.forEach(r => counts[r] = 0);
-    list.forEach(w => { if (counts[w.rank] !== undefined) counts[w.rank]++; });
-    return counts;
-}
-
 function renderList() {
     const all = workouts.slice().sort((a, b) => a.title.localeCompare(b.title));
-    const items = activeTab === 'All' ? all : all.filter(w => w.rank === activeTab);
+    const items = activeTab === 'All' ? all : all.filter(w => levelOf(w) === activeTab);
 
     if (items.length === 0) {
         listEl.innerHTML = '<div class="empty-list">No workouts here yet.</div>';
@@ -149,9 +151,11 @@ function renderList() {
         const row = document.createElement('div');
         row.className = 'workout-row';
         const snippet = (w.body || '').split('\n').map(l => l.trim()).filter(Boolean).join(' · ');
+        const entry = ratings[w.id];
+        const votes = entry && entry.count ? ` · ${entry.count} vote${entry.count === 1 ? '' : 's'}` : '';
         row.innerHTML = `
             <div class="info">
-                <p class="title">${escapeHtml(w.title)} <span class="rank-pill rank-${w.rank}">${w.rank}</span></p>
+                <p class="title">${escapeHtml(w.title)} <span class="rank-pill rank-${levelOf(w)}">${levelOf(w)}</span><span class="hint" style="display:inline;">${votes}</span></p>
                 <p class="snippet">${escapeHtml(snippet)}</p>
             </div>
             <div class="row-actions">
@@ -168,9 +172,12 @@ function renderList() {
 function startEdit(w) {
     editingId = w.id;
     fTitle.value = w.title;
-    fRank.value = w.rank;
     fBody.value = w.body || '';
     fCredit.value = w.credit || '';
+    const entry = ratings[w.id];
+    fLevelInfo.textContent = entry && entry.count
+        ? `Current level: ${levelOf(w)} (${entry.count} vote${entry.count === 1 ? '' : 's'}, average ${(entry.sum / entry.count).toFixed(1)})`
+        : 'Current level: Unrated — no votes yet. This is set by visitors rating it on the public page, not here.';
     editorCard.hidden = false;
     editorCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -178,7 +185,6 @@ function startEdit(w) {
 function resetForm() {
     editingId = null;
     fTitle.value = '';
-    fRank.value = 'Tough';
     fBody.value = '';
     fCredit.value = '';
     editorCard.hidden = true;
@@ -220,7 +226,7 @@ btnSave.addEventListener('click', () => {
     if (!editingId) return;
     const title = fTitle.value.trim();
     if (!title) { fTitle.focus(); return; }
-    const updated = workouts.map(w => w.id === editingId ? { ...w, title, rank: fRank.value, body: fBody.value, credit: fCredit.value.trim() } : w);
+    const updated = workouts.map(w => w.id === editingId ? { ...w, title, body: fBody.value, credit: fCredit.value.trim() } : w);
     withSaving(async () => {
         await ghSave(updated, `Update "${title}"`);
         workouts = updated;
@@ -328,6 +334,7 @@ async function initAdmin() {
         // settings.json missing/unreachable — keep the built-in default
     }
     fDefaultCredit.value = settings.defaultCredit || '';
+    ratings = await fetchRatings();
     resetForm();
     renderTabs();
     renderList();

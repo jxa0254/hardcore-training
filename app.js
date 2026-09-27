@@ -6,8 +6,12 @@
 // fails — e.g. testing index.html straight off disk with no server — it
 // falls back to whatever's in this browser's localStorage.
 //
-// Flow: Home lists every workout (rank shown as a pill) -> pick one -> board.
-// Nothing is randomised — you always choose exactly which workout you see.
+// A workout's level (Tough/Hardcore/Extreme) is entirely crowd-rated (see
+// ratings.js) — nothing is set by hand any more. A fresh workout shows
+// "Unrated" until someone votes.
+//
+// Flow: Home lists every workout (current level shown as a pill) -> pick one
+// -> board, where you can also cast your own 1-3 rating.
 
 const workoutList = document.getElementById('workoutList');
 const emptyHint = document.getElementById('emptyHint');
@@ -17,6 +21,8 @@ const board = document.getElementById('board');
 const btnWake = document.getElementById('btnWake');
 
 let workouts = [];
+let ratings = {};
+let currentWorkout = null;
 let loadFailed = false;
 let defaultCredit = 'Dynamic Fitness';
 
@@ -64,6 +70,12 @@ function showView(view) {
     boardView.hidden = view !== 'board';
 }
 
+function pillHtml(level) {
+    return level
+        ? `<span class="rank-pill rank-${level}">${level}</span>`
+        : `<span class="rank-pill rank-Unrated">Unrated</span>`;
+}
+
 function renderHome() {
     emptyHint.hidden = workouts.length > 0;
     emptyHint.innerHTML = loadFailed
@@ -76,15 +88,18 @@ function renderHome() {
     }
 
     const sorted = workouts.slice().sort((a, b) => {
-        const byRank = RANKS.indexOf(a.rank) - RANKS.indexOf(b.rank);
-        return byRank !== 0 ? byRank : a.title.localeCompare(b.title);
+        const la = levelFor(ratings[a.id]);
+        const lb = levelFor(ratings[b.id]);
+        const ia = la ? RANKS.indexOf(la) : RANKS.length;
+        const ib = lb ? RANKS.indexOf(lb) : RANKS.length;
+        return ia !== ib ? ia - ib : a.title.localeCompare(b.title);
     });
 
     workoutList.innerHTML = '';
     sorted.forEach(w => {
         const btn = document.createElement('button');
         btn.className = 'workout-pick';
-        btn.innerHTML = `<span class="name">${escapeHtml(w.title)}</span><span class="rank-pill rank-${w.rank}">${w.rank}</span>`;
+        btn.innerHTML = `<span class="name">${escapeHtml(w.title)}</span>${pillHtml(levelFor(ratings[w.id]))}`;
         btn.addEventListener('click', () => showWorkout(w));
         workoutList.appendChild(btn);
     });
@@ -93,16 +108,59 @@ function renderHome() {
 }
 
 function showWorkout(w) {
+    currentWorkout = w;
     const bodyHtml = formatBody(w.body);
+    const level = levelFor(ratings[w.id]);
 
     board.innerHTML = `
-        <span class="rank-pill rank-${w.rank}">${w.rank}</span>
+        ${pillHtml(level)}
         <h2>${escapeHtml(w.title)}</h2>
         <div class="body">${bodyHtml}</div>
+        <div class="rate-row" id="rateRow"></div>
         <div class="credit">This sesh was powered by ${escapeHtml(w.credit || defaultCredit)}</div>
     `;
 
+    renderRateRow(w);
     showView('board');
+}
+
+function renderRateRow(w) {
+    const rateRow = document.getElementById('rateRow');
+    if (hasVoted(w.id)) {
+        rateRow.innerHTML = '<span class="rated-note">Thanks for rating this one!</span>';
+        return;
+    }
+    rateRow.innerHTML = `
+        <div class="rate-label">Rate the hardness:</div>
+        <div class="rate-btns">
+            <button class="rate-btn" data-value="1">1 · Tough</button>
+            <button class="rate-btn" data-value="2">2 · Hardcore</button>
+            <button class="rate-btn" data-value="3">3 · Extreme</button>
+        </div>
+    `;
+    rateRow.querySelectorAll('.rate-btn').forEach(btn => {
+        btn.addEventListener('click', () => castVote(w, Number(btn.dataset.value)));
+    });
+}
+
+async function castVote(w, value) {
+    const rateRow = document.getElementById('rateRow');
+    rateRow.innerHTML = '<span class="rated-note">Saving your rating…</span>';
+    try {
+        const result = await submitVote(w.id, value);
+        ratings[w.id] = { sum: result.sum, count: result.count };
+        markVoted(w.id);
+        rateRow.innerHTML = '<span class="rated-note">Thanks for rating this one!</span>';
+
+        if (currentWorkout && currentWorkout.id === w.id) {
+            const pill = board.querySelector('.rank-pill');
+            const level = levelFor(ratings[w.id]);
+            pill.className = `rank-pill rank-${level}`;
+            pill.textContent = level;
+        }
+    } catch {
+        rateRow.innerHTML = '<span class="rated-note">Couldn\'t save your rating — check your connection and try again.</span>';
+    }
 }
 
 function formatBody(body) {
@@ -192,7 +250,11 @@ document.addEventListener('visibilitychange', () => {
 });
 
 (async function init() {
-    workouts = await loadPublishedWorkouts();
-    await loadSettings();
+    const [loadedWorkouts] = await Promise.all([
+        loadPublishedWorkouts(),
+        loadSettings(),
+    ]);
+    workouts = loadedWorkouts;
+    ratings = await fetchRatings();
     renderHome();
 })();
