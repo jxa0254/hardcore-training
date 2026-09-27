@@ -150,21 +150,25 @@ function renderList() {
     items.forEach(w => {
         const row = document.createElement('div');
         row.className = 'workout-row';
+        if (w.hidden) row.style.opacity = '.5';
         const snippet = (w.body || '').split('\n').map(l => l.trim()).filter(Boolean).join(' · ');
         const entry = ratings[w.id];
         const votes = entry && entry.count ? ` · ${entry.count} vote${entry.count === 1 ? '' : 's'}` : '';
+        const hiddenTag = w.hidden ? ' <span class="rank-pill rank-Unrated">Hidden</span>' : '';
         row.innerHTML = `
             <div class="info">
-                <p class="title">${escapeHtml(w.title)} <span class="rank-pill rank-${levelOf(w)}">${levelOf(w)}</span><span class="hint" style="display:inline;">${votes}</span></p>
+                <p class="title">${escapeHtml(w.title)} <span class="rank-pill rank-${levelOf(w)}">${levelOf(w)}</span>${hiddenTag}<span class="hint" style="display:inline;">${votes}</span></p>
                 <p class="snippet">${escapeHtml(snippet)}</p>
             </div>
             <div class="row-actions">
+                <button class="btn small" data-act="toggle-hide">${w.hidden ? 'Show' : 'Hide'}</button>
                 <button class="btn small" data-act="edit">Edit</button>
                 <button class="btn small danger" data-act="del">Delete</button>
             </div>
         `;
         row.querySelector('[data-act=edit]').addEventListener('click', () => startEdit(w));
         row.querySelector('[data-act=del]').addEventListener('click', () => confirmDelete(w));
+        row.querySelector('[data-act="toggle-hide"]').addEventListener('click', () => toggleHidden(w));
         listEl.appendChild(row);
     });
 }
@@ -209,6 +213,17 @@ async function withSaving(fn) {
         }
         throw err;
     }
+}
+
+function toggleHidden(w) {
+    const nowHidden = !w.hidden;
+    const updated = workouts.map(x => x.id === w.id ? { ...x, hidden: nowHidden } : x);
+    withSaving(async () => {
+        await ghSave(updated, `${nowHidden ? 'Hide' : 'Show'} "${w.title}"`);
+        workouts = updated;
+        renderTabs();
+        renderList();
+    }).catch(() => {});
 }
 
 function confirmDelete(w) {

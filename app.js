@@ -77,7 +77,8 @@ function pillHtml(level) {
 }
 
 function renderHome() {
-    emptyHint.hidden = workouts.length > 0;
+    const visible = workouts.filter(w => !w.hidden);
+    emptyHint.hidden = visible.length > 0;
     emptyHint.innerHTML = loadFailed
         ? 'Couldn\'t load the workout list just now. Tap <button class="link-btn" id="btnRetryLoad">Refresh</button> to try again.'
         : 'No workouts saved yet. Head to <a href="admin.html">Admin</a> to load some in.';
@@ -87,7 +88,7 @@ function renderHome() {
         });
     }
 
-    const sorted = workouts.slice().sort((a, b) => {
+    const sorted = visible.slice().sort((a, b) => {
         const la = levelFor(ratings[a.id]);
         const lb = levelFor(ratings[b.id]);
         const ia = la ? RANKS.indexOf(la) : RANKS.length;
