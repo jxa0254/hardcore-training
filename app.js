@@ -210,6 +210,13 @@ document.getElementById('btnRefresh').addEventListener('click', () => {
     location.href = location.pathname + '?t=' + Date.now();
 });
 
+// Cache-bust navigation to Admin too - browsers/CDNs can serve a stale
+// cached copy of the destination HTML page itself, not just the JS/CSS.
+document.getElementById('linkAdmin').addEventListener('click', (e) => {
+    e.preventDefault();
+    location.href = 'admin.html?t=' + Date.now();
+});
+
 // --- Screen Wake Lock (so the board can be left running mid-workout) ---
 
 const wakeLockSupported = 'wakeLock' in navigator;

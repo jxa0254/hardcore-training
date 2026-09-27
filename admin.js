@@ -305,6 +305,13 @@ document.getElementById('btnRefresh').addEventListener('click', () => {
     location.href = location.pathname + '?t=' + Date.now();
 });
 
+// Cache-bust navigation back to the app too - browsers/CDNs can serve a
+// stale cached copy of the destination HTML page itself, not just the JS/CSS
+// (this is what caused "Back to App" to load a blank page once already).
+document.getElementById('btnBackToApp').addEventListener('click', () => {
+    location.href = 'index.html?t=' + Date.now();
+});
+
 // --- GitHub token ---
 
 const tokenCard = document.getElementById('tokenCard');
