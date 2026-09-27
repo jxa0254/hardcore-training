@@ -17,15 +17,30 @@ const board = document.getElementById('board');
 const btnWake = document.getElementById('btnWake');
 
 let workouts = [];
+let loadFailed = false;
 
+async function fetchPublished() {
+    const res = await fetch('workouts.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error('bad status ' + res.status);
+    const data = await res.json();
+    if (!Array.isArray(data)) throw new Error('not an array');
+    return data;
+}
+
+/** The very first fetch on a fresh page load occasionally fails for
+ *  reasons that have nothing to do with the data (a flaky connection, a
+ *  cold CDN edge right after a deploy) - retry once before giving up. */
 async function loadPublishedWorkouts() {
     try {
-        const res = await fetch('workouts.json', { cache: 'no-store' });
-        if (!res.ok) throw new Error('no workouts.json');
-        const data = await res.json();
-        if (Array.isArray(data)) return data;
+        return await fetchPublished();
     } catch {
-        // fall through to local fallback
+        // one retry after a short pause
+    }
+    try {
+        await new Promise(r => setTimeout(r, 600));
+        return await fetchPublished();
+    } catch {
+        loadFailed = true;
     }
     return loadWorkouts();
 }
@@ -37,6 +52,14 @@ function showView(view) {
 
 function renderHome() {
     emptyHint.hidden = workouts.length > 0;
+    emptyHint.innerHTML = loadFailed
+        ? 'Couldn\'t load the workout list just now. Tap <button class="link-btn" id="btnRetryLoad">Refresh</button> to try again.'
+        : 'No workouts saved yet. Head to <a href="admin.html">Admin</a> to load some in.';
+    if (loadFailed) {
+        document.getElementById('btnRetryLoad').addEventListener('click', () => {
+            location.href = location.pathname + '?t=' + Date.now();
+        });
+    }
 
     const sorted = workouts.slice().sort((a, b) => {
         const byRank = RANKS.indexOf(a.rank) - RANKS.indexOf(b.rank);
