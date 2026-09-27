@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0b0d">
+<meta name="robots" content="noindex, nofollow">
+<title>Hybrid Arena — Stats</title>
+<link rel="stylesheet" href="style.css?v=10">
+</head>
+<body>
+
+<header class="top">
+    <h1><span>Hybrid</span>Arena Stats</h1>
+    <div class="btn-row">
+        <button class="navlink" id="btnRefresh" title="Refresh">🔄</button>
+        <button class="navlink" id="btnBackToApp">Back to App</button>
+    </div>
+</header>
+
+<main>
+
+    <div class="card" id="lockScreen">
+        <div class="field">
+            <label for="pinInput">Enter Admin Passcode</label>
+            <input type="password" inputmode="numeric" pattern="[0-9]*" id="pinInput" placeholder="••••" maxlength="8" autocomplete="off">
+        </div>
+        <div class="btn-row">
+            <button class="btn primary" id="btnUnlock">Unlock</button>
+        </div>
+        <div class="hint" id="pinError" style="color:#ff6b6b; display:none;">Incorrect passcode.</div>
+    </div>
+
+    <div id="statsContent" hidden>
+
+    <div class="hint" id="statsStatus" style="margin-bottom:14px;"></div>
+
+    <div class="card" id="summaryCard">
+        <div id="summary"></div>
+    </div>
+
+    <div class="card">
+        <p class="title" style="margin:0 0 10px;">Last 14 Days</p>
+        <div id="byDay"></div>
+    </div>
+
+    <div class="card">
+        <p class="title" style="margin:0 0 10px;">Recent Visits</p>
+        <div id="recent"></div>
+    </div>
+
+    </div>
+
+</main>
+
+<footer class="foot">Not linked from anywhere public — bookmark this URL to get back to it.</footer>
+
+<script src="ratings.js?v=10"></script>
+<script src="stats.js?v=10"></script>
+</body>
+</html>

@@ -116,6 +116,7 @@ footer.foot {
     border: 1px solid var(--line);
     border-radius: 12px;
     padding: 14px 18px;
+    text-decoration: none;
     cursor: pointer;
     user-select: none;
 }

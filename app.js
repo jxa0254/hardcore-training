@@ -255,6 +255,7 @@ document.addEventListener('visibilitychange', () => {
 });
 
 (async function init() {
+    trackVisit();
     const [loadedWorkouts] = await Promise.all([
         loadPublishedWorkouts(),
         loadSettings(),

@@ -312,6 +312,11 @@ document.getElementById('btnBackToApp').addEventListener('click', () => {
     location.href = 'index.html?t=' + Date.now();
 });
 
+document.getElementById('linkStats').addEventListener('click', (e) => {
+    e.preventDefault();
+    location.href = 'stats.html?t=' + Date.now();
+});
+
 // --- GitHub token ---
 
 const tokenCard = document.getElementById('tokenCard');

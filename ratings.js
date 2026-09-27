@@ -1,11 +1,16 @@
-// ratings.js — talks to the small Cloudflare Worker that stores crowd
-// difficulty ratings (1 Tough / 2 Hardcore / 3 Extreme) per workout. A
-// workout's level is now entirely crowd-driven: it starts Unrated, and
-// becomes the rounded average of everyone's votes once at least one person
-// rates it. Voting is unlimited/repeatable on purpose (e.g. rate it again
-// next time you do the workout) - there's no per-device vote lock. Shared
-// by app.js (voting, on the public page) and admin.js (read-only, to show
-// the current level/vote count per workout).
+// ratings.js — talks to the small Cloudflare Worker that backs both the
+// crowd difficulty ratings and the hidden visitor-stats page.
+//
+// Ratings (1 Tough / 2 Hardcore / 3 Extreme) per workout: a workout's level
+// is entirely crowd-driven, starting Unrated until someone votes. Voting is
+// unlimited/repeatable on purpose (e.g. rate it again next time you do the
+// workout) - there's no per-device vote lock. Used by app.js (voting) and
+// admin.js (read-only level/vote-count display).
+//
+// Visits: app.js pings /track on every public page load (fire-and-forget);
+// stats.js reads it back via /stats. Nothing IP-level is stored - just a
+// timestamp, referrer, rough country (from Cloudflare's own header), and a
+// trimmed user-agent string.
 
 const RATINGS_API = 'https://hybrid-arena-ratings.rough-darkness-6e90.workers.dev';
 
@@ -36,4 +41,24 @@ function levelFor(entry) {
     const avg = Math.round(entry.sum / entry.count);
     const clamped = Math.min(3, Math.max(1, avg));
     return RANKS[clamped - 1];
+}
+
+/** Fire-and-forget visit ping. Never throws, never blocks the page. */
+function trackVisit() {
+    try {
+        fetch(`${RATINGS_API}/track`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ref: document.referrer || '', path: location.pathname }),
+            keepalive: true,
+        }).catch(() => {});
+    } catch {
+        // ignore
+    }
+}
+
+async function fetchStats() {
+    const res = await fetch(`${RATINGS_API}/stats`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('Stats failed (' + res.status + ')');
+    return res.json();
 }
