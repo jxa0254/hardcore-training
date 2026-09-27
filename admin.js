@@ -8,7 +8,8 @@
 
 const GH_OWNER = 'jxa0254';
 const GH_REPO = 'hardcore-training';
-const GH_PATH = 'workouts.json';
+const GH_WORKOUTS_PATH = 'workouts.json';
+const GH_SETTINGS_PATH = 'settings.json';
 const GH_BRANCH = 'main';
 const TOKEN_KEY = 'hybridArena.githubToken';
 
@@ -31,34 +32,34 @@ function utf8ToB64(str) {
     return btoa(unescape(encodeURIComponent(str)));
 }
 
-let currentSha = null;
-
-async function ghLoad() {
+/** Read one JSON file from the repo. Returns { data, sha } - the sha is
+ *  needed to write back to the same file. */
+async function ghLoadFile(path) {
     const res = await fetch(
-        `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_PATH}?ref=${GH_BRANCH}`,
+        `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${path}?ref=${GH_BRANCH}`,
         { headers: authHeaders(), cache: 'no-store' }
     );
-    if (!res.ok) throw new Error(`Couldn't load workouts from GitHub (${res.status}).`);
+    if (!res.ok) throw new Error(`Couldn't load ${path} from GitHub (${res.status}).`);
     const data = await res.json();
-    currentSha = data.sha;
-    return JSON.parse(b64ToUtf8(data.content));
+    return { data: JSON.parse(b64ToUtf8(data.content)), sha: data.sha };
 }
 
-async function ghSave(list, message) {
+/** Write one JSON file to the repo. Returns the new sha for the next write. */
+async function ghSaveFile(path, sha, content, message) {
     if (!getToken()) {
         const err = new Error('Connect a GitHub token above before saving.');
         err.code = 'NO_TOKEN';
         throw err;
     }
     const res = await fetch(
-        `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_PATH}`,
+        `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${path}`,
         {
             method: 'PUT',
             headers: { ...authHeaders(), 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 message,
-                content: utf8ToB64(JSON.stringify(list, null, 2)),
-                sha: currentSha,
+                content: utf8ToB64(JSON.stringify(content, null, 2)),
+                sha,
                 branch: GH_BRANCH,
             }),
         }
@@ -68,13 +69,36 @@ async function ghSave(list, message) {
         throw new Error(body.message || `GitHub save failed (${res.status}).`);
     }
     const result = await res.json();
-    currentSha = result.content.sha;
-    return result;
+    return result.content.sha;
+}
+
+let currentSha = null;
+let settingsSha = null;
+
+async function ghLoad() {
+    const { data, sha } = await ghLoadFile(GH_WORKOUTS_PATH);
+    currentSha = sha;
+    return data;
+}
+
+async function ghSave(list, message) {
+    currentSha = await ghSaveFile(GH_WORKOUTS_PATH, currentSha, list, message);
+}
+
+async function ghLoadSettings() {
+    const { data, sha } = await ghLoadFile(GH_SETTINGS_PATH);
+    settingsSha = sha;
+    return data;
+}
+
+async function ghSaveSettings(settings, message) {
+    settingsSha = await ghSaveFile(GH_SETTINGS_PATH, settingsSha, settings, message);
 }
 
 // --- App state ---
 
 let workouts = [];
+let settings = { defaultCredit: 'Dynamic Fitness' };
 let editingId = null;
 let activeTab = 'All';
 
@@ -255,6 +279,20 @@ fileImport.addEventListener('change', () => {
     fileImport.value = '';
 });
 
+// --- Settings ---
+
+const fDefaultCredit = document.getElementById('fDefaultCredit');
+
+document.getElementById('btnSaveSettings').addEventListener('click', () => {
+    const val = fDefaultCredit.value.trim();
+    if (!val) return;
+    const updated = { ...settings, defaultCredit: val };
+    withSaving(async () => {
+        await ghSaveSettings(updated, `Set default credit to "${val}"`);
+        settings = updated;
+    }).catch(() => {});
+});
+
 // --- Refresh ---
 
 document.getElementById('btnRefresh').addEventListener('click', () => {
@@ -284,6 +322,12 @@ async function initAdmin() {
         setStatus(err.message, true);
         workouts = [];
     }
+    try {
+        settings = await ghLoadSettings();
+    } catch {
+        // settings.json missing/unreachable — keep the built-in default
+    }
+    fDefaultCredit.value = settings.defaultCredit || '';
     resetForm();
     renderTabs();
     renderList();

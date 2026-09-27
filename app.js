@@ -18,6 +18,7 @@ const btnWake = document.getElementById('btnWake');
 
 let workouts = [];
 let loadFailed = false;
+let defaultCredit = 'Dynamic Fitness';
 
 async function fetchPublished() {
     const res = await fetch('workouts.json', { cache: 'no-store' });
@@ -25,6 +26,19 @@ async function fetchPublished() {
     const data = await res.json();
     if (!Array.isArray(data)) throw new Error('not an array');
     return data;
+}
+
+async function loadSettings() {
+    try {
+        const res = await fetch('settings.json', { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data && typeof data.defaultCredit === 'string' && data.defaultCredit.trim()) {
+            defaultCredit = data.defaultCredit.trim();
+        }
+    } catch {
+        // keep the built-in default
+    }
 }
 
 /** The very first fetch on a fresh page load occasionally fails for
@@ -85,7 +99,7 @@ function showWorkout(w) {
         <span class="rank-pill rank-${w.rank}">${w.rank}</span>
         <h2>${escapeHtml(w.title)}</h2>
         <div class="body">${bodyHtml}</div>
-        <div class="credit">This sesh was put together by ${escapeHtml(w.credit || 'DynamicFitness')}</div>
+        <div class="credit">This sesh was powered by ${escapeHtml(w.credit || defaultCredit)}</div>
     `;
 
     showView('board');
@@ -179,5 +193,6 @@ document.addEventListener('visibilitychange', () => {
 
 (async function init() {
     workouts = await loadPublishedWorkouts();
+    await loadSettings();
     renderHome();
 })();
