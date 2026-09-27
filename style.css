@@ -434,3 +434,22 @@ footer.foot {
 .workout-row .row-actions { display: flex; gap: 8px; flex: none; }
 
 .empty-list { color: var(--muted); text-align: center; padding: 30px 10px; font-size: 14px; }
+
+.stat-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.stat-tag {
+    display: inline-block;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    white-space: nowrap;
+}

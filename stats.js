@@ -105,7 +105,12 @@ function renderStats(stats) {
             <div class="workout-row">
                 <div class="info">
                     <p class="title" style="font-size:14px;">${escapeHtml(new Date(v.t).toLocaleString())} — ${escapeHtml(summarizeLocation(v))}</p>
-                    <p class="snippet">${escapeHtml(summarizeDevice(v.ua))} · ${escapeHtml(summarizeUA(v.ua))} · from ${escapeHtml(summarizeRef(v.ref))} · ${escapeHtml(v.path || '/')}</p>
+                    <div class="stat-tags">
+                        <span class="stat-tag">${escapeHtml(summarizeDevice(v.ua))}</span>
+                        <span class="stat-tag">${escapeHtml(summarizeUA(v.ua))}</span>
+                        <span class="stat-tag">${escapeHtml(v.path || '/')}</span>
+                    </div>
+                    <p class="snippet" style="margin-top:6px;">From ${escapeHtml(summarizeRef(v.ref))}</p>
                 </div>
             </div>
         `).join('');
