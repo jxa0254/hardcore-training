@@ -39,6 +39,19 @@ function summarizeUA(ua) {
     return `${browser} · ${os}`;
 }
 
+/** Rough device-class guess from a user-agent string. */
+function summarizeDevice(ua) {
+    if (!ua) return 'Unknown';
+    if (/ipad|tablet(?!.*mobile)/i.test(ua)) return 'Tablet';
+    if (/mobi|iphone|android/i.test(ua)) return 'Phone';
+    return 'Desktop';
+}
+
+function summarizeLocation(v) {
+    const parts = [v.city, v.region, v.country].filter(p => p && p !== 'XX');
+    return parts.length ? parts.join(', ') : (v.country || 'Unknown');
+}
+
 function summarizeRef(ref) {
     if (!ref) return 'Direct / no referrer';
     try {
@@ -91,8 +104,8 @@ function renderStats(stats) {
         : recent.map(v => `
             <div class="workout-row">
                 <div class="info">
-                    <p class="title" style="font-size:14px;">${escapeHtml(new Date(v.t).toLocaleString())} — ${escapeHtml(v.country || 'XX')}</p>
-                    <p class="snippet">${escapeHtml(summarizeRef(v.ref))} · ${escapeHtml(summarizeUA(v.ua))} · ${escapeHtml(v.path || '/')}</p>
+                    <p class="title" style="font-size:14px;">${escapeHtml(new Date(v.t).toLocaleString())} — ${escapeHtml(summarizeLocation(v))}</p>
+                    <p class="snippet">${escapeHtml(summarizeDevice(v.ua))} · ${escapeHtml(summarizeUA(v.ua))} · from ${escapeHtml(summarizeRef(v.ref))} · ${escapeHtml(v.path || '/')}</p>
                 </div>
             </div>
         `).join('');
