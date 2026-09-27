@@ -125,10 +125,6 @@ function showWorkout(w) {
 
 function renderRateRow(w) {
     const rateRow = document.getElementById('rateRow');
-    if (hasVoted(w.id)) {
-        rateRow.innerHTML = '<span class="rated-note">Thanks for rating this one!</span>';
-        return;
-    }
     rateRow.innerHTML = `
         <div class="rate-label">Rate the hardness:</div>
         <div class="rate-btns">
@@ -148,8 +144,7 @@ async function castVote(w, value) {
     try {
         const result = await submitVote(w.id, value);
         ratings[w.id] = { sum: result.sum, count: result.count };
-        markVoted(w.id);
-        rateRow.innerHTML = '<span class="rated-note">Thanks for rating this one!</span>';
+        rateRow.innerHTML = '<span class="rated-note">Thanks for rating this one! Did it again? You can rate it again any time.</span>';
 
         if (currentWorkout && currentWorkout.id === w.id) {
             const pill = board.querySelector('.rank-pill');
@@ -157,6 +152,10 @@ async function castVote(w, value) {
             pill.className = `rank-pill rank-${level}`;
             pill.textContent = level;
         }
+
+        setTimeout(() => {
+            if (currentWorkout && currentWorkout.id === w.id) renderRateRow(w);
+        }, 2500);
     } catch {
         rateRow.innerHTML = '<span class="rated-note">Couldn\'t save your rating — check your connection and try again.</span>';
     }
