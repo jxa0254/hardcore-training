@@ -352,7 +352,7 @@ async function initAdmin() {
 // (the code is visible in the page source). Fine for a personal tool; don't
 // rely on it to protect anything sensitive.
 
-const ADMIN_PASSCODE = '1234';
+const ADMIN_PASSCODE = '230478';
 const UNLOCK_KEY = 'hybridArena.adminUnlocked';
 
 const lockScreen = document.getElementById('lockScreen');
