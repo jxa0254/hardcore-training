@@ -18,7 +18,7 @@ const workoutPicker = document.getElementById('workoutPicker');
 const boardView = document.getElementById('boardView');
 const boardWrap = document.getElementById('boardWrap');
 const board = document.getElementById('board');
-const wakeToggle = document.getElementById('wakeToggle');
+const btnWake = document.getElementById('btnWake');
 
 let workouts = [];
 
@@ -149,22 +149,26 @@ document.getElementById('btnRefresh').addEventListener('click', () => {
 
 const wakeLockSupported = 'wakeLock' in navigator;
 if (!wakeLockSupported) {
-    wakeToggle.disabled = true;
+    btnWake.disabled = true;
 }
 
 let wakeLock = null;
+let wakeWanted = false;
 
 async function requestWakeLock() {
     try {
         wakeLock = await navigator.wakeLock.request('screen');
         wakeLock.addEventListener('release', () => { wakeLock = null; });
     } catch {
-        wakeToggle.checked = false;
+        wakeWanted = false;
+        btnWake.classList.remove('active');
     }
 }
 
-wakeToggle.addEventListener('change', () => {
-    if (wakeToggle.checked) {
+btnWake.addEventListener('click', () => {
+    wakeWanted = !wakeWanted;
+    btnWake.classList.toggle('active', wakeWanted);
+    if (wakeWanted) {
         requestWakeLock();
     } else if (wakeLock) {
         wakeLock.release();
@@ -173,7 +177,7 @@ wakeToggle.addEventListener('change', () => {
 });
 
 document.addEventListener('visibilitychange', () => {
-    if (wakeToggle.checked && document.visibilityState === 'visible' && !wakeLock) {
+    if (wakeWanted && document.visibilityState === 'visible' && !wakeLock) {
         requestWakeLock();
     }
 });
