@@ -126,7 +126,7 @@ function showWorkout(w) {
 function renderRateRow(w) {
     const rateRow = document.getElementById('rateRow');
     rateRow.innerHTML = `
-        <div class="rate-label">Rate the hardness:</div>
+        <div class="rate-label">Rate the hardness: (That's what she said :))</div>
         <div class="rate-btns">
             <button class="rate-btn" data-value="1">1 · Tough</button>
             <button class="rate-btn" data-value="2">2 · Hardcore</button>
