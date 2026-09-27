@@ -1,3 +1,10 @@
+<!--
+    Bump the ?v= on style.css/store.js/app.js below whenever those files
+    change - GitHub Pages/browsers cache them independently of this HTML
+    file, so without a version bump a stale copy can keep being served
+    even after a fresh deploy (this bit us once already - see commit
+    history around "cache-busting").
+-->
 <!doctype html>
 <html lang="en">
 <head>
@@ -8,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Permanent+Marker&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
 
@@ -25,6 +32,10 @@
     <section id="homeView">
         <div class="workout-picker" id="workoutList"></div>
         <div class="empty-hint" id="emptyHint" hidden></div>
+
+        <div class="settings-row">
+            <a href="admin.html" class="settings-cog" title="Admin">⚙️</a>
+        </div>
     </section>
 
     <section id="boardView" hidden>
@@ -39,14 +50,10 @@
         </div>
     </section>
 
-    <div class="settings-row">
-        <a href="admin.html" class="settings-cog" title="Admin">⚙️</a>
-    </div>
-
 </main>
 
 
-<script src="store.js"></script>
-<script src="app.js"></script>
+<script src="store.js?v=2"></script>
+<script src="app.js?v=2"></script>
 </body>
 </html>
