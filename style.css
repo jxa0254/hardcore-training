@@ -148,47 +148,6 @@ footer.foot {
 .rank-Tougher { background: var(--tougher); color: #fff; }
 .rank-Extreme { background: var(--extreme); color: #fff; }
 
-/* --- Rank picker (index.html) --- */
-
-.rank-grid {
-    display: grid;
-    gap: 14px;
-}
-
-.rank-card {
-    position: relative;
-    overflow: hidden;
-    border-radius: 16px;
-    border: none;
-    padding: 22px 20px;
-    text-align: left;
-    cursor: pointer;
-    color: #100a00;
-    font-family: inherit;
-}
-
-.rank-card .name {
-    display: block;
-    font-size: 26px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.rank-card .count {
-    display: block;
-    margin-top: 4px;
-    font-size: 13px;
-    font-weight: 700;
-    opacity: .8;
-}
-
-.rank-card.rank-Tough { background: linear-gradient(135deg, #ffd23f, var(--tough)); }
-.rank-card.rank-Tougher { background: linear-gradient(135deg, #ff8a3d, var(--tougher)); color: #fff; }
-.rank-card.rank-Extreme { background: linear-gradient(135deg, #ff4d6d, var(--extreme)); color: #fff; }
-
-.rank-card[disabled] { opacity: .35; cursor: not-allowed; }
-
 .empty-hint {
     margin-top: 18px;
     text-align: center;

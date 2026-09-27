@@ -6,17 +6,13 @@
 // fails — e.g. testing index.html straight off disk with no server — it
 // falls back to whatever's in this browser's localStorage.
 //
-// Flow: Home (pick a rank) -> pick a specific workout from that rank's list
-// -> board. Nothing is randomised — you always choose exactly which workout
-// you see.
+// Flow: Home lists every workout (rank shown as a pill) -> pick one -> board.
+// Nothing is randomised — you always choose exactly which workout you see.
 
-const rankGrid = document.getElementById('rankGrid');
+const workoutList = document.getElementById('workoutList');
 const emptyHint = document.getElementById('emptyHint');
-const pickView = document.getElementById('pickView');
-const listView = document.getElementById('listView');
-const workoutPicker = document.getElementById('workoutPicker');
+const homeView = document.getElementById('homeView');
 const boardView = document.getElementById('boardView');
-const boardWrap = document.getElementById('boardWrap');
 const board = document.getElementById('board');
 const btnWake = document.getElementById('btnWake');
 
@@ -34,52 +30,29 @@ async function loadPublishedWorkouts() {
     return loadWorkouts();
 }
 
-function countsFor(list) {
-    const counts = {};
-    RANKS.forEach(r => counts[r] = 0);
-    list.forEach(w => { if (counts[w.rank] !== undefined) counts[w.rank]++; });
-    return counts;
-}
-
 function showView(view) {
-    pickView.hidden = view !== 'pick';
-    listView.hidden = view !== 'list';
+    homeView.hidden = view !== 'home';
     boardView.hidden = view !== 'board';
 }
 
-function renderPicker() {
-    const counts = countsFor(workouts);
-    const total = RANKS.reduce((sum, r) => sum + counts[r], 0);
-    emptyHint.hidden = total > 0;
+function renderHome() {
+    emptyHint.hidden = workouts.length > 0;
 
-    rankGrid.innerHTML = '';
-    RANKS.forEach(rank => {
-        const n = counts[rank];
-        const btn = document.createElement('button');
-        btn.className = `rank-card rank-${rank}`;
-        btn.disabled = n === 0;
-        btn.innerHTML = `<span class="name">${rank}</span><span class="count">${n} workout${n === 1 ? '' : 's'}</span>`;
-        btn.addEventListener('click', () => pickRank(rank));
-        rankGrid.appendChild(btn);
+    const sorted = workouts.slice().sort((a, b) => {
+        const byRank = RANKS.indexOf(a.rank) - RANKS.indexOf(b.rank);
+        return byRank !== 0 ? byRank : a.title.localeCompare(b.title);
     });
 
-    showView('pick');
-}
-
-function pickRank(rank) {
-    const items = workouts.filter(w => w.rank === rank).sort((a, b) => a.title.localeCompare(b.title));
-    if (items.length === 0) return;
-
-    workoutPicker.innerHTML = '';
-    items.forEach(w => {
+    workoutList.innerHTML = '';
+    sorted.forEach(w => {
         const btn = document.createElement('button');
         btn.className = 'workout-pick';
         btn.innerHTML = `<span class="name">${escapeHtml(w.title)}</span><span class="rank-pill rank-${w.rank}">${w.rank}</span>`;
         btn.addEventListener('click', () => showWorkout(w));
-        workoutPicker.appendChild(btn);
+        workoutList.appendChild(btn);
     });
 
-    showView('list');
+    showView('home');
 }
 
 function showWorkout(w) {
@@ -138,8 +111,7 @@ function escapeHtml(s) {
     return div.innerHTML;
 }
 
-document.getElementById('btnBackToRanks').addEventListener('click', renderPicker);
-document.getElementById('btnHome').addEventListener('click', renderPicker);
+document.getElementById('btnHome').addEventListener('click', renderHome);
 
 document.getElementById('btnRefresh').addEventListener('click', () => {
     location.href = location.pathname + '?t=' + Date.now();
@@ -184,5 +156,5 @@ document.addEventListener('visibilitychange', () => {
 
 (async function init() {
     workouts = await loadPublishedWorkouts();
-    renderPicker();
+    renderHome();
 })();
