@@ -74,6 +74,8 @@ function renderStats(stats) {
         .filter(d => (new Date(today) - new Date(d)) / 86400000 < 7)
         .reduce((sum, d) => sum + stats.byDay[d], 0);
 
+    const uniqueIps = new Set((stats.recent || []).map(v => v.ip).filter(Boolean)).size;
+
     document.getElementById('summary').innerHTML = `
         <div class="workout-row">
             <div class="info"><p class="title">${stats.total || 0}</p><p class="snippet">Total visits (all time)</p></div>
@@ -83,6 +85,9 @@ function renderStats(stats) {
         </div>
         <div class="workout-row">
             <div class="info"><p class="title">${last7}</p><p class="snippet">Visits in the last 7 days</p></div>
+        </div>
+        <div class="workout-row">
+            <div class="info"><p class="title">${uniqueIps}</p><p class="snippet">Unique IPs (out of the last ${(stats.recent || []).length} visits shown below)</p></div>
         </div>
     `;
 
@@ -106,6 +111,7 @@ function renderStats(stats) {
                 <div class="info">
                     <p class="title" style="font-size:14px;">${escapeHtml(new Date(v.t).toLocaleString())} — ${escapeHtml(summarizeLocation(v))}</p>
                     <div class="stat-tags">
+                        <span class="stat-tag">${escapeHtml(v.ip || 'unknown IP')}</span>
                         <span class="stat-tag">${escapeHtml(summarizeDevice(v.ua))}</span>
                         <span class="stat-tag">${escapeHtml(summarizeUA(v.ua))}</span>
                         <span class="stat-tag">${escapeHtml(v.path || '/')}</span>
