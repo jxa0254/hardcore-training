@@ -76,6 +76,6 @@
     "id": "seed-endurance-ergs-1",
     "createdAt": "2026-09-28T09:00:00.000Z",
     "title": "Endurance Ergs 1",
-    "body": "Ski (Descending):\n1000m\n800m\n600m\n400m\n200m\n\nRow (Descending):\n1000m\n800m\n600m\n400m\n200m\n\nBike (Descending):\n2000m\n1600m\n1200m\n800m\n400m\n\nLap (ESM):\n1 Lap\n\nFinisher:\n20 Sit-Ups\n20 Squats\n10 Push-Ups"
+    "body": "Round 1:\n1000m Ski\n1000m Row\n2000m Bike\n1 Lap\n\nRound 2:\n800m Ski\n800m Row\n1600m Bike\n1 Lap\n\nRound 3:\n600m Ski\n600m Row\n1200m Bike\n1 Lap\n\nRound 4:\n400m Ski\n400m Row\n800m Bike\n1 Lap\n\nRound 5:\n200m Ski\n200m Row\n400m Bike\n1 Lap\n\nEvery 5 Minutes:\nStop and complete 20 Sit-Ups, 20 Squats, 10 Push-Ups, then resume where you left off"
   }
 ]
