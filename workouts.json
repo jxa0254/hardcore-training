@@ -71,5 +71,11 @@
     "credit": "Mike @ A*",
     "body": "10 Rounds:\nRun 2.5 Laps (TF)\nWalk Down Sled Track Back to Start Line (30 Secs)",
     "hidden": true
+  },
+  {
+    "id": "seed-endurance-ergs-1",
+    "createdAt": "2026-09-28T09:00:00.000Z",
+    "title": "Endurance Ergs 1",
+    "body": "Ski (Descending):\n1000m\n800m\n600m\n400m\n200m\n\nRow (Descending):\n1000m\n800m\n600m\n400m\n200m\n\nBike (Descending):\n2000m\n1600m\n1200m\n800m\n400m\n\nLap (ESM):\n1 Lap\n\nFinisher:\n20 Sit-Ups\n20 Squats\n10 Push-Ups"
   }
 ]
