@@ -232,32 +232,8 @@ footer.foot {
 .board-nav-wrap {
     position: relative;
     touch-action: pan-y;
+    overflow: hidden;
 }
-
-.board-nav-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 5;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: rgba(0,0,0,.6);
-    color: #fff;
-    border: 1px solid rgba(255,255,255,.15);
-    font-size: 22px;
-    line-height: 1;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-}
-
-.board-nav-btn:active { background: var(--accent); }
-
-#btnPrevWorkout { left: 6px; }
-#btnNextWorkout { right: 6px; }
 
 .board-swipe-hint {
     text-align: center;
@@ -283,7 +259,13 @@ footer.foot {
     color: #17171a;
     font-family: 'Kalam', cursive;
     font-weight: 700;
+    transition: transform 200ms ease, opacity 200ms ease;
 }
+
+.board.slide-exit-left  { transform: translateX(-40px); opacity: 0; }
+.board.slide-exit-right { transform: translateX(40px);  opacity: 0; }
+.board.slide-enter-right { transition: none; transform: translateX(40px);  opacity: 0; }
+.board.slide-enter-left  { transition: none; transform: translateX(-40px); opacity: 0; }
 
 .board .rank-pill { font-size: 12px; padding: 4px 14px; }
 

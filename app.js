@@ -128,12 +128,28 @@ function showWorkout(w) {
     showView('board');
 }
 
+const SLIDE_MS = 200;
+let sliding = false;
+
 /** Browse to another workout in the same list shown on Home, without going
- *  back there first. Wraps around at either end. */
+ *  back there first - with a sliding transition in the direction of travel.
+ *  Wraps around at either end. */
 function showWorkoutAt(offset) {
-    if (homeList.length === 0) return;
+    if (homeList.length === 0 || sliding) return;
     const next = ((currentIndex + offset) % homeList.length + homeList.length) % homeList.length;
-    showWorkout(homeList[next]);
+    const target = homeList[next];
+
+    sliding = true;
+    board.classList.add(offset > 0 ? 'slide-exit-left' : 'slide-exit-right');
+
+    setTimeout(() => {
+        showWorkout(target);
+        board.classList.remove('slide-exit-left', 'slide-exit-right');
+        board.classList.add(offset > 0 ? 'slide-enter-right' : 'slide-enter-left');
+        void board.offsetWidth; // force layout so the entry position registers before animating away from it
+        board.classList.remove('slide-enter-right', 'slide-enter-left');
+        setTimeout(() => { sliding = false; }, SLIDE_MS);
+    }, SLIDE_MS);
 }
 
 function renderRateRow(w) {
@@ -218,9 +234,6 @@ function escapeHtml(s) {
 }
 
 document.getElementById('btnHome').addEventListener('click', renderHome);
-
-document.getElementById('btnPrevWorkout').addEventListener('click', () => showWorkoutAt(-1));
-document.getElementById('btnNextWorkout').addEventListener('click', () => showWorkoutAt(1));
 
 document.addEventListener('keydown', (e) => {
     if (boardView.hidden) return;
