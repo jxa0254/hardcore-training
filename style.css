@@ -229,6 +229,43 @@ footer.foot {
 
 /* --- The board (workout display, styled like a real gym whiteboard) --- */
 
+.board-nav-wrap {
+    position: relative;
+    touch-action: pan-y;
+}
+
+.board-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(0,0,0,.6);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,.15);
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.board-nav-btn:active { background: var(--accent); }
+
+#btnPrevWorkout { left: 6px; }
+#btnNextWorkout { right: 6px; }
+
+.board-swipe-hint {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 10px;
+}
+
 .board-wrap {
     padding: 10px;
     border-radius: 18px;

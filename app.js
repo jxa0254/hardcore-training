@@ -23,6 +23,8 @@ const btnWake = document.getElementById('btnWake');
 let workouts = [];
 let ratings = {};
 let currentWorkout = null;
+let homeList = [];
+let currentIndex = -1;
 let loadFailed = false;
 let defaultCredit = 'Dynamic Fitness';
 
@@ -95,6 +97,7 @@ function renderHome() {
         const ib = lb ? RANKS.indexOf(lb) : RANKS.length;
         return ia !== ib ? ia - ib : a.title.localeCompare(b.title);
     });
+    homeList = sorted;
 
     workoutList.innerHTML = '';
     sorted.forEach(w => {
@@ -110,6 +113,7 @@ function renderHome() {
 
 function showWorkout(w) {
     currentWorkout = w;
+    currentIndex = homeList.findIndex(x => x.id === w.id);
     const bodyHtml = formatBody(w.body);
     const level = levelFor(ratings[w.id]);
 
@@ -122,6 +126,14 @@ function showWorkout(w) {
 
     renderRateRow(w);
     showView('board');
+}
+
+/** Browse to another workout in the same list shown on Home, without going
+ *  back there first. Wraps around at either end. */
+function showWorkoutAt(offset) {
+    if (homeList.length === 0) return;
+    const next = ((currentIndex + offset) % homeList.length + homeList.length) % homeList.length;
+    showWorkout(homeList[next]);
 }
 
 function renderRateRow(w) {
@@ -206,6 +218,30 @@ function escapeHtml(s) {
 }
 
 document.getElementById('btnHome').addEventListener('click', renderHome);
+
+document.getElementById('btnPrevWorkout').addEventListener('click', () => showWorkoutAt(-1));
+document.getElementById('btnNextWorkout').addEventListener('click', () => showWorkoutAt(1));
+
+document.addEventListener('keydown', (e) => {
+    if (boardView.hidden) return;
+    if (e.key === 'ArrowLeft') showWorkoutAt(-1);
+    if (e.key === 'ArrowRight') showWorkoutAt(1);
+});
+
+// Swipe left/right on the board to browse - handy when you don't know which
+// workout you want yet and just want to flick through them.
+let touchStartX = null;
+const boardNavWrap = document.getElementById('boardNavWrap');
+boardNavWrap.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+}, { passive: true });
+boardNavWrap.addEventListener('touchend', (e) => {
+    if (touchStartX === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    touchStartX = null;
+    if (Math.abs(dx) < 40) return;
+    showWorkoutAt(dx < 0 ? 1 : -1);
+});
 
 document.getElementById('btnRefresh').addEventListener('click', () => {
     location.href = location.pathname + '?t=' + Date.now();
