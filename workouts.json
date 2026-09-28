@@ -77,5 +77,11 @@
     "createdAt": "2026-09-28T09:00:00.000Z",
     "title": "Endurance Ergs 1",
     "body": "Round 1:\n1000m Ski\n1000m Row\n2000m Bike\n1 Lap\n\nRound 2:\n800m Ski\n800m Row\n1600m Bike\n1 Lap\n\nRound 3:\n600m Ski\n600m Row\n1200m Bike\n1 Lap\n\nRound 4:\n400m Ski\n400m Row\n800m Bike\n1 Lap\n\nRound 5:\n200m Ski\n200m Row\n400m Bike\n1 Lap\n\nEvery 5 Minutes:\nStop and complete 20 Sit-Ups, 20 Squats, 10 Push-Ups, then resume where you left off"
+  },
+  {
+    "id": "seed-hyrox-pairs-no1",
+    "createdAt": "2026-09-28T10:00:00.000Z",
+    "title": "HYROX Pairs No1",
+    "body": "Round 1:\n400m Run (Together)\n40 Cals (Switch Erg Each Time)\n100m Sandbag Lunges (20kg)\n20 Sync Air Squats\n\nRound 2:\n400m Run\n40 Cals\n60m Sled Pull (110kg)\n20 Sync Air Squats\n\nRound 3:\n400m Run\n40 Cals\n60 Burpees\n20 Sync Air Squats\n\nRound 4:\n400m Run\n40 Cals\n200m Farmers Carry (24kg)\n20 Sync Air Squats\n\nRound 5:\n400m Run\n40 Cals\n100 Wall Balls (9kg)\n20 Sync Air Squats"
   }
 ]
