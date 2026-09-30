@@ -165,6 +165,10 @@ footer.foot {
     padding: 20px;
 }
 
+.modal-overlay[hidden] {
+    display: none;
+}
+
 .modal-card {
     background: var(--panel);
     border: 1px solid var(--line);
