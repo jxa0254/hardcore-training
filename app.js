@@ -235,6 +235,42 @@ function escapeHtml(s) {
 
 document.getElementById('btnHome').addEventListener('click', renderHome);
 
+// --- Randomize ---
+
+const randomizeModal = document.getElementById('randomizeModal');
+
+document.getElementById('btnRandomize').addEventListener('click', () => {
+    randomizeModal.hidden = false;
+});
+
+document.getElementById('btnRandomizeCancel').addEventListener('click', () => {
+    randomizeModal.hidden = true;
+});
+
+document.getElementById('btnRandomizeAny').addEventListener('click', () => {
+    randomizeModal.hidden = true;
+    pickRandomAndShow();
+});
+
+randomizeModal.querySelectorAll('[data-level]').forEach(btn => {
+    btn.addEventListener('click', () => {
+        randomizeModal.hidden = true;
+        pickRandomAndShow(btn.dataset.level);
+    });
+});
+
+function pickRandomAndShow(level) {
+    const pool = level
+        ? homeList.filter(w => levelFor(ratings[w.id]) === level)
+        : homeList;
+    if (pool.length === 0) {
+        alert(level ? `No ${level} workouts yet — try another level.` : 'No workouts to pick from yet.');
+        return;
+    }
+    const pick = pool[Math.floor(Math.random() * pool.length)];
+    showWorkout(pick);
+}
+
 document.addEventListener('keydown', (e) => {
     if (boardView.hidden) return;
     if (e.key === 'ArrowLeft') showWorkoutAt(-1);

@@ -150,6 +150,45 @@ footer.foot {
 .rank-Extreme { background: var(--extreme); color: #fff; }
 .rank-Unrated { background: var(--panel-2); color: var(--muted); border: 1px solid var(--line); }
 
+.rank-btn-Tough { background: var(--tough); border-color: var(--tough); color: #1a1200; }
+.rank-btn-Hardcore { background: var(--tougher); border-color: var(--tougher); color: #fff; }
+.rank-btn-Extreme { background: var(--extreme); border-color: var(--extreme); color: #fff; }
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 20px;
+}
+
+.modal-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 22px;
+    width: 100%;
+    max-width: 360px;
+}
+
+.modal-title {
+    margin: 0 0 16px;
+    text-align: center;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    font-size: 15px;
+}
+
+.modal-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
 .empty-hint {
     margin-top: 18px;
     text-align: center;

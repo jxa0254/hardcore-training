@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Permanent+Marker&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=18">
+<link rel="stylesheet" href="style.css?v=19">
 </head>
 <body>
 
@@ -34,10 +34,27 @@
         <div class="workout-picker" id="workoutList"></div>
         <div class="empty-hint" id="emptyHint" hidden></div>
 
+        <div class="btn-row" style="margin-top:16px;">
+            <button class="btn primary block" id="btnRandomize">🎲 Randomize</button>
+        </div>
+
         <div class="settings-row">
             <a href="admin.html" id="linkAdmin" class="settings-cog" title="Admin">⚙️</a>
         </div>
     </section>
+
+    <div class="modal-overlay" id="randomizeModal" hidden>
+        <div class="modal-card">
+            <p class="modal-title">Pick a hardness level</p>
+            <div class="modal-btns">
+                <button class="btn block rank-btn-Tough" data-level="Tough">Tough</button>
+                <button class="btn block rank-btn-Hardcore" data-level="Hardcore">Hardcore</button>
+                <button class="btn block rank-btn-Extreme" data-level="Extreme">Extreme</button>
+            </div>
+            <button class="btn ghost block" id="btnRandomizeAny" style="margin-top:10px;">Skip — Surprise Me</button>
+            <button class="btn ghost block" id="btnRandomizeCancel" style="margin-top:10px;">Cancel</button>
+        </div>
+    </div>
 
     <section id="boardView" hidden>
         <div class="board-nav-wrap" id="boardNavWrap">
@@ -55,8 +72,8 @@
 </main>
 
 
-<script src="store.js?v=18"></script>
-<script src="ratings.js?v=18"></script>
-<script src="app.js?v=18"></script>
+<script src="store.js?v=19"></script>
+<script src="ratings.js?v=19"></script>
+<script src="app.js?v=19"></script>
 </body>
 </html>
