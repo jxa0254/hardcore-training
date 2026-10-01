@@ -4,6 +4,11 @@
     file, so without a version bump a stale copy can keep being served
     even after a fresh deploy (this bit us once already - see commit
     history around "cache-busting").
+
+    Also bump the "build" number in version.json AND the matching
+    APP_BUILD constant in app.js on every deploy (any change, not just
+    JS/CSS) - that's what powers the flashing red star on the Refresh
+    button that tells you an open tab is looking at an old version.
 -->
 <!doctype html>
 <html lang="en">
@@ -15,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Permanent+Marker&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20">
+<link rel="stylesheet" href="style.css?v=21">
 </head>
 <body>
 
@@ -24,7 +29,10 @@
     <div class="btn-row">
         <button class="navlink" id="btnHome" title="Home">🏠</button>
         <button class="navlink" id="btnWake" title="Keep screen on">🔆</button>
-        <button class="navlink" id="btnRefresh" title="Refresh (get the latest published workouts)">🔄</button>
+        <button class="navlink" id="btnRefresh" title="Refresh (get the latest published workouts)">
+            🔄
+            <span class="update-star" id="updateStar" hidden>★</span>
+        </button>
     </div>
 </header>
 
@@ -72,8 +80,8 @@
 </main>
 
 
-<script src="store.js?v=20"></script>
-<script src="ratings.js?v=20"></script>
-<script src="app.js?v=20"></script>
+<script src="store.js?v=21"></script>
+<script src="ratings.js?v=21"></script>
+<script src="app.js?v=21"></script>
 </body>
 </html>

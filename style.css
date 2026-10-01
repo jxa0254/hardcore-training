@@ -56,6 +56,7 @@ header.top h1 span {
 }
 
 header.top .navlink {
+    position: relative;
     display: inline-flex;
     align-items: center;
     color: var(--muted);
@@ -71,6 +72,21 @@ header.top .navlink {
     border-radius: 999px;
     white-space: nowrap;
     cursor: pointer;
+}
+
+.update-star {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    color: var(--extreme);
+    font-size: 14px;
+    line-height: 1;
+    animation: update-star-flash 1s steps(1, end) infinite;
+}
+
+@keyframes update-star-flash {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
 }
 
 header.top .navlink:active {

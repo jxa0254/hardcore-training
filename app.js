@@ -296,6 +296,33 @@ document.getElementById('btnRefresh').addEventListener('click', () => {
     location.href = location.pathname + '?t=' + Date.now();
 });
 
+// --- Stale-tab detector ---
+//
+// Bump this number (and version.json's "build") on every deploy. A tab left
+// open across a deploy will poll version.json, see a higher number than its
+// own, and flash a red star on the Refresh button until it's clicked.
+const APP_BUILD = 21;
+const updateStar = document.getElementById('updateStar');
+
+async function checkForUpdate() {
+    try {
+        const res = await fetch('version.json', { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (typeof data.build === 'number' && data.build > APP_BUILD) {
+            updateStar.hidden = false;
+        }
+    } catch {
+        // not critical - just skip this check
+    }
+}
+
+checkForUpdate();
+setInterval(checkForUpdate, 60000);
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') checkForUpdate();
+});
+
 // Cache-bust navigation to Admin too - browsers/CDNs can serve a stale
 // cached copy of the destination HTML page itself, not just the JS/CSS.
 document.getElementById('linkAdmin').addEventListener('click', (e) => {
