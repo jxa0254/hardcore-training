@@ -303,7 +303,7 @@ document.getElementById('btnRefresh').addEventListener('click', () => {
 // changes. A tab left open across a deploy will poll version.json, see a
 // higher number than its own, and flash a red star on the Refresh button
 // until it's clicked.
-const APP_BUILD = 22;
+const APP_BUILD = 23;
 const updateStar = document.getElementById('updateStar');
 
 async function checkForUpdate() {
