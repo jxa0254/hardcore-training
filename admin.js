@@ -210,17 +210,29 @@ async function withSaving(fn) {
             setStatus(err.message, true);
         } else {
             setStatus(err.message || 'Save failed.', true);
+            alert(err.message || 'Save failed.');
         }
         throw err;
     }
 }
 
+/** Re-read the latest workouts.json from GitHub, apply the change to that,
+ *  and save - so a page left open (or edits made elsewhere) can't cause a
+ *  stale-sha rejection or overwrite newer changes with an old list. */
+async function mutateWorkouts(change, message) {
+    const latest = await ghLoad();
+    const updated = change(latest);
+    await ghSave(updated, message);
+    workouts = updated;
+}
+
 function toggleHidden(w) {
     const nowHidden = !w.hidden;
-    const updated = workouts.map(x => x.id === w.id ? { ...x, hidden: nowHidden } : x);
     withSaving(async () => {
-        await ghSave(updated, `${nowHidden ? 'Hide' : 'Show'} "${w.title}"`);
-        workouts = updated;
+        await mutateWorkouts(
+            list => list.map(x => x.id === w.id ? { ...x, hidden: nowHidden } : x),
+            `${nowHidden ? 'Hide' : 'Show'} "${w.title}"`
+        );
         renderTabs();
         renderList();
     }).catch(() => {});
@@ -228,10 +240,8 @@ function toggleHidden(w) {
 
 function confirmDelete(w) {
     if (!confirm(`Delete "${w.title}"? This can't be undone.`)) return;
-    const updated = workouts.filter(x => x.id !== w.id);
     withSaving(async () => {
-        await ghSave(updated, `Delete "${w.title}"`);
-        workouts = updated;
+        await mutateWorkouts(list => list.filter(x => x.id !== w.id), `Delete "${w.title}"`);
         renderTabs();
         renderList();
     }).catch(() => {});
@@ -241,10 +251,14 @@ btnSave.addEventListener('click', () => {
     if (!editingId) return;
     const title = fTitle.value.trim();
     if (!title) { fTitle.focus(); return; }
-    const updated = workouts.map(w => w.id === editingId ? { ...w, title, body: fBody.value, credit: fCredit.value.trim() } : w);
+    const id = editingId;
+    const body = fBody.value;
+    const credit = fCredit.value.trim();
     withSaving(async () => {
-        await ghSave(updated, `Update "${title}"`);
-        workouts = updated;
+        await mutateWorkouts(
+            list => list.map(w => w.id === id ? { ...w, title, body, credit } : w),
+            `Update "${title}"`
+        );
         resetForm();
         renderTabs();
         renderList();
@@ -287,11 +301,11 @@ fileImport.addEventListener('change', () => {
             alert('That file doesn\'t look like a Hybrid Arena backup.');
             return;
         }
-        const existingIds = new Set(workouts.map(w => w.id));
-        const merged = workouts.concat(incoming.filter(w => w && w.id && !existingIds.has(w.id)));
         withSaving(async () => {
-            await ghSave(merged, `Import ${incoming.length} workout(s)`);
-            workouts = merged;
+            await mutateWorkouts(list => {
+                const existingIds = new Set(list.map(w => w.id));
+                return list.concat(incoming.filter(w => w && w.id && !existingIds.has(w.id)));
+            }, `Import ${incoming.length} workout(s)`);
             renderTabs();
             renderList();
         }).catch(() => {});
@@ -307,8 +321,9 @@ const fDefaultCredit = document.getElementById('fDefaultCredit');
 document.getElementById('btnSaveSettings').addEventListener('click', () => {
     const val = fDefaultCredit.value.trim();
     if (!val) return;
-    const updated = { ...settings, defaultCredit: val };
     withSaving(async () => {
+        const latest = await ghLoadSettings();
+        const updated = { ...latest, defaultCredit: val };
         await ghSaveSettings(updated, `Set default credit to "${val}"`);
         settings = updated;
     }).catch(() => {});
