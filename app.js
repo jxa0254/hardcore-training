@@ -298,12 +298,11 @@ document.getElementById('btnRefresh').addEventListener('click', () => {
 
 // --- Stale-tab detector ---
 //
-// Bump this number (and version.json's "build") on EVERY deploy - including
-// a plain workouts.json edit (a rename, a new workout) - not just JS/CSS
-// changes. A tab left open across a deploy will poll version.json, see a
-// higher number than its own, and flash a red star on the Refresh button
-// until it's clicked.
-const APP_BUILD = 27;
+// version.json's "build" is bumped on every deploy (by me on a push, or by
+// Admin automatically on every save). The first check after page load records
+// the build this tab loaded with; any later poll that sees a different build
+// flashes a red star on the Refresh button until it's clicked.
+let loadedBuild = null;
 const updateStar = document.getElementById('updateStar');
 
 async function checkForUpdate() {
@@ -311,7 +310,10 @@ async function checkForUpdate() {
         const res = await fetch('version.json', { cache: 'no-store' });
         if (!res.ok) return;
         const data = await res.json();
-        if (typeof data.build === 'number' && data.build > APP_BUILD) {
+        if (typeof data.build !== 'number') return;
+        if (loadedBuild === null) {
+            loadedBuild = data.build;
+        } else if (data.build !== loadedBuild) {
             updateStar.hidden = false;
         }
     } catch {

@@ -199,10 +199,22 @@ function setStatus(msg, isError) {
     ghStatus.style.color = isError ? '#ff6b6b' : 'var(--muted)';
 }
 
+/** Bump version.json's build so open public tabs flash the red refresh star.
+ *  Best-effort - a failure here must never make the real save look failed. */
+async function bumpBuild() {
+    try {
+        const { data, sha } = await ghLoadFile('version.json');
+        await ghSaveFile('version.json', sha, { build: (Number(data.build) || 0) + 1 }, 'Bump build');
+    } catch {
+        // ignore
+    }
+}
+
 async function withSaving(fn) {
     setStatus('Saving to GitHub…', false);
     try {
         await fn();
+        await bumpBuild();
         setStatus('Saved — live on GitHub, public page updates once Pages rebuilds.', false);
     } catch (err) {
         if (err.code === 'NO_TOKEN') {
