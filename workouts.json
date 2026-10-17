@@ -115,5 +115,11 @@
     "createdAt": "2026-10-17T10:00:00.000Z",
     "title": "Hyrox Pairs 3",
     "body": "Every 5 Minutes (Start On Zero):\n10 Sync Burpees\n\nPairs:\n500m Run\n2000m Row\n500m Run\n200m Sled Push\n500m Run\n4000m Bike\n500m Run\n100 Reverse Lunge\n500m Run\n2000m Ski\n500m Run\n150 Wall Balls\n500m Run"
+  },
+  {
+    "id": "seed-pairs-ladder-40",
+    "createdAt": "2026-10-19T09:00:00.000Z",
+    "title": "Pairs Ladder — 40 Mins",
+    "body": "Start Of Every Round (Together):\n1 Synchro Lap\n10 Synchro Burpees\n\nLadder (Round 1 / 2 / 3 / 4 / 5...):\n10/20/30/40/50 DB Snatch (Floor)\n10/20/30/40/50 Wall Balls\n10/20/30/40/50 Cal\n10/15/20/25/30 Box Jump Overs\n\nEnd Of Every Round (Together):\n20 Synchro Sit-Ups\n\nThen back to the start with the next reps up, until 40 mins is done"
   }
 ]
