@@ -103,5 +103,11 @@
     "createdAt": "2026-10-12T09:00:00.000Z",
     "title": "Pairs Every 10",
     "body": "Every 10 Mins (Start On Zero):\n600m Run\n\nPairs:\n65/80 Cal Ski/Row\n100 Sit-Ups\n10 Length Sled Push\n60 Burpee Box Over\n40 Sync Air Squat\n45/60 Cal Echo/Bike\n100 Wall Balls\n80 Plate GTOH\n40 Sync Reverse Lunge\n20 Walkouts"
+  },
+  {
+    "id": "seed-pairs-sync-run",
+    "createdAt": "2026-10-17T09:00:00.000Z",
+    "title": "Pairs Sync Run",
+    "body": "600m Sync Run\n60 DA DB Thrusters\n1200/1500m Row or Ski\n80 Wall Balls\n80 Alt DB Hang Snatch\n800/1000m Ski or Row\n600m Sync Run\n2400/3000m Echo or Bike\n60 Box Overs\n60 Burpees\n600m Sync Run\n40 T2B / 50 Sit-Ups\n1600/2000m Bike or Echo"
   }
 ]
