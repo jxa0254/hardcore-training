@@ -90,13 +90,9 @@ function renderHome() {
         });
     }
 
-    const sorted = visible.slice().sort((a, b) => {
-        const la = levelFor(ratings[a.id]);
-        const lb = levelFor(ratings[b.id]);
-        const ia = la ? RANKS.indexOf(la) : RANKS.length;
-        const ib = lb ? RANKS.indexOf(lb) : RANKS.length;
-        return ia !== ib ? ia - ib : a.title.localeCompare(b.title);
-    });
+    const sorted = visible.slice().sort((a, b) =>
+        a.title.localeCompare(b.title, undefined, { numeric: true, sensitivity: 'base' })
+    );
     homeList = sorted;
 
     workoutList.innerHTML = '';
